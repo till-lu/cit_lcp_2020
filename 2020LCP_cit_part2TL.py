@@ -1,0 +1,698 @@
+#!/usr/bin/env python2
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import, division, print_function, unicode_literals
+from psychopy.visual import Window, TextStim
+from psychopy.core import wait, Clock, quit
+from psychopy.event import clearEvents, waitKeys, Mouse
+from psychopy.gui import Dlg
+from time import gmtime, strftime
+from codecs import open
+from random import shuffle, choice, randint
+from copy import deepcopy
+from psychopy.iohub import launchHubServer
+from numpy import mean, std
+from datetime import datetime
+from itertools import permutations
+import random
+## for testing
+testing = True # True for testing, False for real recording
+###
+main_ddline = 1 # sec
+isi_min_max = (500, 800)
+instruction_color = '#9999FF'
+############ MAIN ITEMS - paste from JS
+
+##todo:
+# - have recall task three times (right now just once)
+# - add CIT warning for EXP-Group
+# - specify and add instructions etc.
+# - double check if conditions and respective items are correct
+# - decrease font size? (some items two rows right now)
+# - think about ending() (remove dcit etc?)
+
+
+distraction_text = "Bearbeiten Sie nun bitte die Ihnen auf einem Blatt gereichten Aufgaben. Sie haben dafür 10 Minuten Zeit. Drücken Sie anschließend die Leertaste um fortzufahren."
+
+target_guilty_list = ' Username : Frank Moser\n\n Deckname : Grüner Hut\n\n Operation : Operation Schwein\n\n Akte : Schnee Akte\n\n Pläne : Schiff Pläne\n\n Ort : Barsch Strasse'
+
+target_innocent_list = ' Username : Sven Groß\n\n Deckname : Grüne Krawatte\n\n Operation : Operation Tanne\n\n Akte : Schwan Akte\n\n Pläne : Stahl Pläne\n\n Ort : Fuchs Strasse'
+
+crime_learning_dict = {u"user": u"Tim Koch", u"person" : u"Blaue Jacke", u"operation" : u"Operation Kuh", u"akte" : u"Regen Akte", u"plan" : u"U-Boot Pläne", u"strasse" : u"Hai Strasse"}
+
+probes_guilty = [u"Tim Koch", u"Blaue Jacke", u"Operation Kuh", u"Regen Akte", u"U-Boot Pläne", u"Hai Straße"]
+
+probes_innocent = [u"Paul Nowak", u"Weißes Shirt", u"Operation Fichte", u"Eulen Akte", u"Messing Pläne", u"Löwen Straße"]
+
+targets_guilty = [u"Frank Moser", u"Grüner Hut", u"Operation Schwein", u"Schnee Akte", u"Schiff Pläne", u"Barsch Straße"]
+
+targets_innocent = [u"Sven Groß", u"Grüne Krawatte", u"Operation Tanne", u"Schwan Akte", u"Stahl Pläne", u"Fuchs Straße"]
+
+irrelevants_guilty = [u"Braune Schuhe", u"Roter Schal", u"Graue Hose", u"Schwarze Handschuhe", u"Hans Krause", u"Nick Lange", u"Max Horn", u"Leo Bauer", u"Operation Pferd", u"Operation Ziege", u"Operation Schaf", u"Operation Maultier", u"Hagel Akte", u"Wind Akte", u"Graupel Akte", u"Nebel Akte", u"Panzer Pläne", u"Flugzeug Pläne", u"Bomben Pläne", u"Waffen Pläne", u"Kabeljau Straße", u"Karpfen Straße", u"Hecht Straße", u"Forelle Straße"]
+
+irrelevants_innocent = [u"Beiger Anzug", u"Rote Weste", u"Hellbrauner Gürtel", u"Schwarze Socken", u"Ben Schmid", u"Emil Burger", u"Marc Huber", u"Jan Schreiber", u"Operation Eiche", u"Operation Birke", u"Operation Ulme", u"Operation Pinie", u"Zaunkönig Akte", u"Enten Akte", u"Krähen Akte", u"Gänse Akte", u"Zinn Pläne", u"Zink Pläne", u"Blei Pläne", u"Eisen Pläne", u"Reh Straße", u"Wolf Straße", u"Bären Straße", u"Elch Straße"]
+
+dummy_list_numbers = [0,1,2,3,4,5]
+
+key_pair = { 'always' : { 'nontarg': 'k', 'target' : 'l', 'descr' : 'K (linker Zeigefinger) und L (rechter Zeigefinger)' }}
+
+
+
+if testing:
+    escape_key = 'escape'
+    instr_wait = 0.1
+else:
+    escape_key = 'notallowed'
+    instr_wait = 0.5
+
+
+# EXECUTE all main functions here
+def execute():
+    start_input() # prompt to input stuff
+    # now initiate stuff
+    basic_variables() # basic variables assigned, calculated
+    set_screen() # creates psychopy screen and stim objects
+    # window opens
+    distraction_task()
+    create_file() # created output file
+    set_block_info() # sets block text and related infos based on conditions
+    win.mouseVisible = False # hide mouse
+
+    next_block() # begin task & run until finished
+
+    print("************** END OF EXPERIMENT **************")
+
+    ending() # saves demographic & final infos, gives feedback
+
+    waitKeys(keyList = ['b']) # press B to end the exp (prevents subject from closing window)
+    quit()
+
+def distraction_task():
+    show_instruction(distraction_text)
+
+def crime_text():
+    show_instruction(probe_crime_text)
+
+
+def cit_warning_text():
+    show_instruction(text_warning_cit)
+
+text_warning_cit = "Im Folgenden wird ein Reaktionszeit-basierter Lügentest durchgeführt. Achten Sie auf ... etc. " # for experimental group,
+
+
+
+training_recall_item = {0 : 'Username', 1 : 'Deckname', 2 : 'Operation', 3 : 'Akte', 4 : 'Pläne', 5 : 'Ort'}
+
+
+
+
+
+def ending():
+    full_duration = round( ( datetime.now() - start_date ).total_seconds()/60, 2)
+
+    if len(all_main_rts['probe']) > 1 and len(all_main_rts['irrelevant']) > 1:
+        dcit = (mean(all_main_rts['probe']) - mean(all_main_rts['irrelevant'])) / std(all_main_rts['irrelevant'])
+        if dcit > 0.2:
+            end_feed = '\n\nBezüglich Ihrer Ergebnisse: Ihre Reaktionszeit war für die PROBES signifikant langsamer als für andere Namen. Also vermuten wir, dass das Ihr richtiger Name ist.'
+        else:
+            end_feed = '\n\nBezüglich Ihrer Ergebnisse: Ihre Reaktionszeit war für die PROBES nicht signifikant langsamer als für andere Namen. Also vermuten wir, dass das nicht Ihr Name ist.'
+    else:
+        dcit = '-'
+        end_feed = ''
+    info = 'Danke für die Teilnahme. Wenn Sie möchten, können Sie gehen, aber bitte seien Sie leise dabei.\n\nKurze Information über den Test:\n\nIn dieser Studie versuchen wir, Ihre wirklichen selbstbezogenen Details (z.B. Ihren tatsächlichen Vornamen) von solchen zu unterscheiden, die Ihnen nicht zugehörig sind (z.B. andere Vornamen). Ziel dieses Tests ist es, anhand von Reaktionszeiten herauszufinden, wenn eine Person versucht, bestimmte Daten zu verschleiern bzw. zu verheimlichen. Dies geschieht auf Basis der Vermutung, dass Reaktionszeiten für die Ihnen präsentierten eigenen Namen langsamer ausfallen, als im Falle anderer Namen. Hauptanliegen dieser Studie ist es, zu zeigen, ob dies besser mit der Aufforderung zu einer möglichst schnellen Reaktion oder zu einer möglichst genauen Reaktion funktioniert.' + end_feed + '\n\nFür weitere Informationen wenden Sie sich bitte an den Versuchsleiter (oder schreiben Sie eine E-mail an Gaspar Lukacs).'
+
+    data_out.write(dems + "/" +
+      "/".join( [ str(nmbr) for nmbr in
+      [practice_repeated['block1'],
+      practice_repeated['block2'],
+      practice_repeated['block3'],
+      full_duration,
+      dcit] ] ) +
+      "\n")
+    data_out.close()
+    show_instruction( info )
+
+def set_screen(): # screen properties
+    global win, start_text, left_label, right_label, center_disp, instruction_page
+    win = Window([1280, 1000], color='Black', fullscr = 1, units = 'pix', allowGUI = True) # 1280 1024
+    start_text = TextStim(win, color=instruction_color, font='Verdana', text = u'Um anzufangen, bitte die Leertaste drücken.', pos = [0,-300], height=35, bold = True, wrapWidth= 1100)
+    left_label = TextStim(win, color='white', font='Verdana', text = 'unvertraut', pos = [-350,-160], height=35, alignHoriz='center')
+    right_label = TextStim(win, color='white', font='Verdana', text = 'vertraut', pos = [350,-160], height=35, alignHoriz='center')
+    center_disp = TextStim(win, color='white', font='Arial', text = '', height = 60)
+    instruction_page = TextStim(win, wrapWidth = 1200, height = 28, font='Verdana', color = instruction_color)
+
+
+def task_instructions( whichtext = ''):
+    keys_info = 'Während des Tests sehen Sie Wörter in der Mitte des Bildschirms auftauchen. Sie müssen jedes Wort entweder mit der linken oder mit der rechten Antworttaste kategorisieren. Diese Tasten sind ' + key_pair['always']['descr'] + '. '
+    main_item_info = ' '
+
+def set_block_info():
+    global block_info, block_num, incorrect, tooslow, move_on
+    move_on = '\n\nUm weiterzugehen, drücken Sie die Leertaste.\n\nFalls nötig, drücken Sie die Taste ENTER (oder eine der Pfeiltasten) um die vollständigen Anweisungen erneut zu lesen.'
+    block_info = [""]
+    if block_num == 1:
+        block_info.append( 'Im Folgenden kategorisieren Sie bitte Wortpaare, die sie in der vorherigen Aufgabe auswendig gelernt und wiedergegeben haben als vertraut, alle anderen als unvertraut. \n\nUm weiterzugehen, drücken Sie die Leertaste.' + move_on)
+    elif block_num == 2:
+        if condition in [1, 2, 3, 4]:
+            block_info.append(text_warning_cit + move_on)
+    elif block_num == 3:
+        block_info.append( ' Die Aufgabe bleibt genau dieselbe.' + move_on)
+
+def start_input():
+    global subj_id, dems, condition, gender, categories, true_probes, true_forename, true_surname, name_ausgeben, decknamen
+    input_box = Dlg(title=u'Grunddaten', labelButtonOK=u'OK', labelButtonCancel=u'Abbrechen')
+    input_box.addText(text=u'')
+    input_box.addField(label=u'c.', tip = '1-12')
+    input_box.addField(label=u'VP', tip = 'Ziffern')
+    input_box.addText(text=u'')
+    input_box.addText(text=u'Bitte ausfüllen:')
+    input_box.addField(label=u'Geschlecht', initial = '', choices=[u'männlich',u'weiblich'] )
+    input_box.addField(label=u'Alter', tip = 'Ziffern')
+    input_box.addField(label=u'Herkunftsland', initial = '', choices=[u'Österreich',u'Deutschland',u'Schweiz'] )
+    input_box.addField(label=u'Händigkeit', initial = '', choices=[u'rechtshändig',u'linkshändig'], tip = '(bevorzugte Hand zum Schreiben)' )
+    input_box.addText(text=u'')
+    input_box.addText(text=u'Ihr Name:')
+    input_box.addText(text=u'(Jeweils nur einen Namen, kein Doppelname!)')
+    input_box.addField(label=u'Vorname')
+    input_box.addField(label=u'Nachname')
+    input_box.addText(text=u'')
+    input_box.show()
+    if input_box.OK:
+        stop = False
+        try:
+            condition = int(input_box.data[0])
+        except ValueError:
+            condition = 99
+            print("Condition must be a number!")
+        ## CONDITIONS:
+        # use condition nos. for control vs. experimental group
+        # plus for guilty vs innocent block first
+        #
+        # check if variables correctly given
+        if condition not in range(1,13): # range(1,13):
+            if testing:
+                condition = 1 # set value for testing to skip Dlg input box
+                print("condition was not set, now set to " + str(condition) + " for testing.")
+            else:
+                print("condition was not set correctly (should be 1/2/3/4)")
+                stop = True
+        try:
+            subj_num = int(input_box.data[1])
+        except ValueError:
+            if testing:
+                subj_num = 99 # set value for testing to skip Dlg input box
+                print("subj_num was not set, now set to " + str(subj_num) + " for testing.")
+            else:
+                print("vp (subject number) was not set correctly (should be simple number)")
+                stop = True
+        try:
+            age = int(input_box.data[3])
+        except ValueError:
+            if testing:
+                age = 11 # set value for testing to skip Dlg input box
+                print("age was not set, now set to " + str(age) + " for testing.")
+            else:
+                print("age was not set correctly (should be simple number)")
+                stop = True
+        true_forename = input_box.data[6]
+        true_surname = input_box.data[7]
+        if len(true_forename) < 2:
+            print('forename less than 2 chars')
+            if testing:
+                true_forename = 'Till'
+            else:
+                stop = True
+        elif not true_forename.isalpha():
+            print('forename is not alphabetic only')
+            stop = True
+
+        if len(true_surname) < 2:
+            print('surname less than 2 chars')
+            if testing:
+                true_surname = 'Lubczyk'
+            else:
+                stop = True
+        elif not true_surname.isalpha():
+            print('surname is not alphabetic only')
+            stop = True
+        if stop:
+            print("\nTry again with correct inputs.\n")
+            quit()
+        subj_id = str(subj_num).zfill(2) + "_" + str(strftime("%Y%m%d%H%M%S", gmtime()))
+        if input_box.data[2] == 'weiblich':
+            gender = 2
+        else:
+            gender = 1
+        dems = 'dems/gender/age/country/hand/reps1/rep2/rep3/rep6/drtn/dcit' + '\t' + str(gender) + '/' + str(age)  + '/' + input_box.data[4]  + '/' + input_box.data[5]
+
+        categories = ['Name', 'Deckname', 'Operation', 'Akte', 'Pläne', 'Straße']
+        true_probes = {categories[0]: probes_guilty[0],  categories[1]: probes_guilty[1], categories[2] : probes_guilty[2], categories[3] : probes_guilty[3], categories[4]: probes_guilty[4], categories[5]: probes_guilty[5] }
+        confirm_dlg()
+    else:
+        quit()
+
+def confirm_dlg():
+    global start_date
+    confirm_input = Dlg(title=u'Confirmation', labelButtonOK=u'JA', labelButtonCancel=u'Nein')
+    input_feed = u'Bitte bestätigen Sie, dass Ihr Vor- und Nachname richtig geschrieben wird: ' + true_forename.upper() + ' ' + true_surname.upper()
+    confirm_input.addText(text='')
+    confirm_input.addText(text=input_feed)
+    confirm_input.addText(text='')
+    confirm_input.show()
+    if confirm_input.OK:
+        start_date = datetime.now()
+    else:
+        start_input()
+
+
+def trm(raw_inp):
+    return [w for w in raw_inp.replace(',', ' ').split(' ') if w != ''][:2]
+
+def target_check_one():
+    global condition, required, typedin
+    show_instruction('Im Folgenden wird Ihnen erneut eine Liste an Items präsentiert, die Sie danach wiedergeben müssen' + move_on)
+    required_items = []
+    if condition in [1,2,5,6]:
+        required_items = targets_guilty
+        show_instruction('Drücken Sie die Leertaste, wenn Sie die unten stehenden Items gründlich auswendig gelernt haben.\n\n' + target_guilty_list)
+    else:
+        required_items = targets_innocent
+        show_instruction('Drücken Sie die Leertaste, wenn Sie die unten stehenden Items gründlich auswendig gelernt haben.\n\n' + target_innocent_list)
+    combine_shuffle = list(zip(required_items, dummy_list_numbers))
+    shuffle(combine_shuffle)
+    required_items[:], dummy_list_numbers[:] = zip(*combine_shuffle)
+    counter = 0
+    while counter <= 5:
+        required = required_items[counter]
+        cue = training_recall_item[dummy_list_numbers[counter]]
+        counter += 1
+        instr_display =  TextStim(win, color=instruction_color, font='Verdana', text = u'Bitte geben Sie im Folgenden die korrekte Antwort ein, drücken Sie dann ENTER.', pos=(0, 150), height=30, wrapWidth=1100, colorSpace='rgb')
+        input_prompt =  TextStim(win, color=instruction_color, font='Verdana', text = 'Geben Sie ' + cue + ' ein:', pos=(-100, 0), alignHoriz = 'right', height=35)
+        input_display =  TextStim(win, color='white', pos=(-100, -4), alignHoriz = 'left', height=35, bold = True, colorSpace='rgb')
+        typedin = ''
+        while True:
+            input_display.setText(typedin)
+            instr_display.draw()
+            input_prompt.draw()
+            input_display.draw()
+            win.flip()
+            char = waitKeys()[0]
+            if char == 'backspace' and len(typedin) > 0:
+                typedin = typedin[:-1]
+            elif char == escape_key:
+                break
+            elif char == 'return':
+                if len( trm(typedin) ) > 0:
+                    break
+            elif len(char) == 1 and char.isalpha():
+                typedin += char.upper()
+            elif char == 'space':
+                typedin += ' '
+            elif char == 'comma':
+                 typedin += ','
+        typedin_words = trm(typedin)
+        add_recall_resp()
+        if counter <= 5:
+            show_instruction("Mit Leertaste zum nächsten Item")
+        else:
+            break
+
+
+def target_check_two():
+    global condition, required, typedin
+    required_items = []
+    show_instruction('Im Folgenden wird Ihnen erneut eine Liste an Items präsentiert, die Sie danach wiedergeben müssen' + move_on)
+    if condition in [1,2,5,6]:
+        required_items = targets_innocent
+        show_instruction('Drücken Sie die Leertaste, wenn Sie die unten stehenden Items gründlich auswendig gelernt haben.\n\n' + target_innocent_list)
+    else:
+        required_items = targets_guilty
+        show_instruction('Drücken Sie die Leertaste, wenn Sie die unten stehenden Items gründlich auswendig gelernt haben.\n\n' + target_guilty_list)
+    combine_shuffle = list(zip(required_items, dummy_list_numbers))
+    shuffle(combine_shuffle)
+    required_items[:], dummy_list_numbers[:] = zip(*combine_shuffle)
+    counter = 0
+    while counter <= 5:
+        required = required_items[counter]
+        cue = training_recall_item[dummy_list_numbers[counter]]
+        counter += 1
+        instr_display =  TextStim(win, color=instruction_color, font='Verdana', text = u'Bitte geben Sie im Folgenden die korrekte Antwort ein, drücken Sie dann ENTER.', pos=(0, 150), height=30, wrapWidth=1100, colorSpace='rgb')
+        input_prompt =  TextStim(win, color=instruction_color, font='Verdana', text = 'Geben Sie ' + cue + ' ein:', pos=(-100, 0), alignHoriz = 'right', height=35)
+        input_display =  TextStim(win, color='white', pos=(-100, -4), alignHoriz = 'left', height=35, bold = True, colorSpace='rgb')
+        typedin = ''
+        while True:
+            input_display.setText(typedin)
+            instr_display.draw()
+            input_prompt.draw()
+            input_display.draw()
+            win.flip()
+            char = waitKeys()[0]
+            if char == 'backspace' and len(typedin) > 0:
+                typedin = typedin[:-1]
+            elif char == escape_key:
+                break
+            elif char == 'return':
+                if len( trm(typedin) ) > 0:
+                    break
+            elif len(char) == 1 and char.isalpha():
+                typedin += char.upper()
+            elif char == 'space':
+                typedin += ' '
+            elif char == 'comma':
+                 typedin += ','
+        typedin_words = trm(typedin)
+        add_recall_resp()
+        if counter <= 5:
+            show_instruction("Mit Leertaste zum nächsten Item")
+        else:
+            break
+
+
+
+def create_items(x_probes, x_targets, x_irrelevants, xtimes):
+    # list of dicts with all possible items
+    stims_base = []
+    for itm in x_probes:
+        stims_base.append({'word': itm, 'item_type': 'probe'})
+    for itm in x_targets:
+        stims_base.append({'word': itm, 'item_type': 'target'})
+    for itm in x_irrelevants:
+        stims_base.append({'word': itm, 'item_type': 'irrelevant'})
+    # this list is added one by one to the full final list
+    # each time in a new random order
+    full_stim_list = []
+    for i in range(xtimes):
+        shuffle(stims_base)
+        full_stim_list += deepcopy(stims_base)
+    return(full_stim_list)
+
+
+def main_items():
+    global blcks_base, crrnt_phase
+    print('main_items()')
+    crrnt_phase = 'main'
+    block_stim_base = blcks_base.pop(0)
+    main_stims = block_stim_base
+    return [dct for sublist in main_stims for dct in sublist] # flatten
+
+
+
+
+
+def basic_variables():
+    global stopwatch, blocks_order, guilt, block_num, all_main_rts, kb_device, practice_repeated, firsttime
+    stopwatch = Clock()
+    guilt = 1 # always guilty
+     ## CONDITIONS:
+        # 1       probes 1 + exp + guilty first
+        # 2       probes 2 + exp + guilty first
+        # 3       probes 1 + exp + inno first
+        # 4       probes 2 + exp + inno first
+        # 5       probes 1 + control + guilty first
+        # 6       probes 2 + control + guilty first
+        # 7       probes 1 + control + inno first
+        # 8       probes 2 + control + inno first
+    block_num = 0
+    all_main_rts = { 'probe' : [], 'irrelevant': [] }
+    practice_repeated = { 'block1' : 0, 'block2': 0, 'block3': 0}
+    firsttime = True
+    io = launchHubServer()
+    kb_device = io.devices.keyboard
+
+# create output file, begin writing, reset parameters
+def create_file():
+    global data_out
+    f_name = 'exp_lcp_cit_maintask' + str(condition) + "_" + "_" + str(guilt) + "_ord" + "_" + subj_id + '.txt'
+    data_out=open(f_name, 'a', encoding='utf-8')
+    data_out.write( '\t'.join( [ "subject_id", "condition", "width", "phase", "block_number", "trial_number", "stimulus_shown", "category", "stim_type", "response_key", "rt_start", "incorrect", "too_slow", "press_duration", "isi", "date_in_ms" ] ) + "\n" )
+    print("File created:", f_name)
+
+def str_if_num( num_val ):
+    if isinstance(num_val, str) or isinstance(num_val, unicode):
+        return num_val
+    else:
+        return str( num_val*1000 )
+
+def add_resp():
+    global incorrect, tooslow
+    data_out.write( '\t'.join( [ subj_id, str(condition), crrnt_phase, str(block_num), str(trial_num+1), stim_text, stim_current["item_type"], stim_type, resp_key, str_if_num(rt_start), str(incorrect), str(tooslow), str_if_num(press_dur), str_if_num( isi_min_max[0]/1000 + isi_delay ), str(strftime("%Y%m%d%H%M%S", gmtime())) ] ) + '\n' )
+    print("resp key:", resp_key, "for stim:", stim_text, "incorrect:", incorrect, "rt_start:", rt_start)
+
+
+def add_recall_resp():
+    global condition, required
+    data_out.write( '\t'.join( [ str(subj_id), str(condition), str(required), str(typedin), str(similar_text(str(required.upper()), str(typedin)))]) + '\n' )
+    print(required, str(typedin), similar_text(str(required.upper()), str(typedin)))
+
+def start_with_space():
+    start_text.draw() # start with space
+    center_disp.setText("+")
+    center_disp.draw()
+    draw_labels()
+    win.flip()
+    inst_resp = waitKeys(keyList = ['space',escape_key])
+    end_on_esc(inst_resp[0])
+    draw_labels()
+    win.flip()
+    wait(isi_min_max[0]/1000)
+
+def draw_labels():
+    if block_num <= 1:
+        left_label.draw()
+        right_label.draw()
+
+def assign_keys():
+    global targetkey, nontargetkey
+    targetkey = key_pair['always']['target']
+    nontargetkey = key_pair['always']['nontarg']
+
+def next_block():
+    global ddline, block_num, rt_data_dict, crrnt_instr, blck_itms, firsttime, crrnt_phase, condition
+    block_num += 1
+    if block_num == 1:
+        crrnt_phase = 'practice'
+        practiceitems = create_items(['Blaue Jacke'], ['Grüner Hut'], ['Braune Schuhe' , 'Roter Schal', 'Graue Hose', 'Schwarze Handschuhe'], 1)
+        blck_itms = practiceitems
+        rt_data_dict = {}
+        assign_keys()
+        ddline = 10
+        #block_num += 1
+    elif block_num == 2:
+        crrnt_phase = 'main'
+        if condition in [1, 4, 5, 8]:
+            block1_items = create_items(probes_guilty, targets_guilty, irrelevants_guilty, 3)
+            target_check_one()
+        elif condition in [2, 3, 6, 7]:
+            block1_items = create_items(probes_innocent, targets_innocent, irrelevants_innocent, 3)
+            target_check_one()
+        blck_itms = block1_items
+        ddline = main_ddline
+        #block_num += 1
+    elif block_num == 3:
+        crrnt_phase = 'main'
+        if condition in [1, 4, 5, 8]:
+            block2_items = create_items(probes_innocent, targets_innocent, irrelevants_innocent, 3)
+            target_check_two()
+        elif condition in [2, 3, 6, 7]:
+            block2_items = create_items(probes_guilty, targets_guilty, irrelevants_guilty, 3)
+            target_check_two()
+        #block_num += 1
+        blck_itms = block2_items
+        ddline = main_ddline
+    if testing == True:
+        blck_itms = blck_itms[0:5]
+    while block_num <= 3:
+        run_block()
+
+
+def show_instruction(instruction_text):
+    instruction_page.setText(instruction_text)
+    instruction_page.draw()
+    win.flip()
+    wait(instr_wait)
+    inst_resp = waitKeys(keyList = ['space', escape_key])
+    end_on_esc(inst_resp[0])
+
+def show_block_instr():
+    if block_num == 1:
+        instruction_page.setText( 'Training Block ? With Instructions? \n for now six items (probe, target, 4xirr)  \n\n Drücken Sie die rechte Taste für GRÜNER HUT und die linke Taste für alle anderen Wortpaare. \n' + key_pair['always']['descr'] )
+    elif block_num == 2:
+        instruction_page.setText( 'Block 1 \n Drücke Sie die rechte Taste für die von Ihnen soeben wiedergegebenen Wortpaare, für alle anderen die linke Taste.  \n' + key_pair['always']['descr'])
+    elif block_num == 3:
+        instruction_page.setText('Block 2')
+    instruction_page.draw()
+    win.flip()
+    wait(instr_wait)
+    show_again = ['left', 'up', 'right', 'down','return']
+    inst_resp = waitKeys( keyList = [ 'space', escape_key ] + show_again )
+    end_on_esc( inst_resp[0] )
+    if inst_resp[0] in show_again:
+        show_instruction( task_instructions() + '\n\nUm weiterzugehen, drücken Sie die Leertaste.' )
+        show_block_instr()
+
+def run_block():
+    global block_num, trial_num, stim_current, stim_text, stim_type, incorrect, tooslow, first_wrong, show_feed, ddline, isi_delay, resp_key, rt_start, press_dur
+    show_block_instr()
+    first_wrong = False
+    print("len(blck_itms):", len(blck_itms))
+    start_with_space()
+    for trial_num in range(len(blck_itms)): # go through all stimuli of current block
+        print("------- Trial number:", trial_num, "In block:", block_num, "C:", condition, "ord:")
+        stim_current = blck_itms[trial_num]
+        incorrect = 0
+        tooslow = 0
+        stim_type = stim_current['item_type']
+        stim_text = stim_current["word"]
+        isi_delay = randint(1, isi_min_max[1]-isi_min_max[0]) / 1000
+        wait(isi_delay) # wait ISI
+        center_disp.setText(stim_text.upper())
+        draw_labels()
+        center_disp.draw()
+        win.callOnFlip(stopwatch.reset)
+        kb_device.clearEvents()
+        clearEvents()
+        win.flip()
+        response = waitKeys(maxWait = ddline, keyList=[targetkey, nontargetkey, escape_key], timeStamped=stopwatch)
+        if not response:
+            rt_start = stopwatch.getTime()
+            resp_key = '-'
+            tooslow += 1
+            show_tooslow()
+        else:
+            resp_key = response[0][0]
+            rt_start = response[0][1]
+            end_on_esc(resp_key)
+            if resp_key == targetkey:
+                if stim_type in ("target"):
+                    incorrect = 0
+                    tooslow = 0
+                else:
+                    incorrect += 1
+                    show_false()
+            elif resp_key == nontargetkey:
+                if stim_type[:10] in ("probe","irrelevant"):
+                    incorrect = 0
+                    tooslow = 0
+                else:
+                    incorrect += 1
+                    show_false()
+        draw_labels()
+        win.flip()
+        wait(isi_min_max[0]/1000)
+        press_dur = '-' # remains this if none found, or not with correct key
+        for ke in kb_device.getReleases(): # get io keypress events for duration
+            try:
+                if ke.key == resp_key: # if matches the pygame key, should be fine
+                    press_dur = ke.duration # store io keypress duration
+            except Exception:
+                pass
+            break
+        add_resp() # store trial data
+        collect_rts()
+        if block_num > 3:
+            break
+    while block_num <= 3:
+        next_block()
+
+def collect_rts(): # for practice evaluation & dcit calculation
+    global rt_data_dict, all_main_rts, rt_start
+    if (incorrect+tooslow) > 0:
+        rt_start = -9
+    if crrnt_phase == 'practice':
+        if stim_type[:10] in ("probe","irrelevant"):
+            group_type = 'main_item'
+        else:
+            group_type = stim_type
+        if group_type not in rt_data_dict:
+            rt_data_dict[group_type] = []
+        rt_data_dict[group_type].append(rt_start)
+    if crrnt_phase == 'main' and stim_type[:10] in ("probe","irrelevant") and incorrect != 1 and tooslow != 1 and rt_start > 0.15 and rt_start < main_ddline:
+        all_main_rts[ stim_type[:10] ].append(rt_start)
+
+def show_false():
+    center_disp.text = 'Falsch!'
+    center_disp.color = '#ff1111'
+    center_disp.draw()
+    draw_labels()
+    win.flip()
+    wait(0.5)
+    center_disp.color = 'white'
+def show_tooslow():
+    center_disp.text = 'Zu langsam!'
+    center_disp.color = '#ff1111'
+    center_disp.draw()
+    draw_labels()
+    win.flip()
+    wait(0.5)
+    center_disp.color = 'white'
+
+
+def end_on_esc(escap):
+    if escap == escape_key : # escape
+        print("Trying to escape?")
+        instruction_page.setText('Sure you want to discontinue and quit the experiment?\n\nPress "y" to quit, or press "n" to continue.')
+        instruction_page.draw()
+        win.flip()
+        wait(1)
+        quit_resp = waitKeys(keyList = ['y', 'n'])
+        if quit_resp[0] == 'y':
+            print("************ ESCAPED ************")
+            data_out.close()
+            win.close()
+            quit()
+        else:
+            clearEvents()
+            print("Continuing...")
+
+def similar_str(str1, str2):
+    """
+    return the len of longest string both in str1 and str2
+    and the positions in str1 and str2
+    """
+    max_len = tmp = pos1 = pos2 = 0
+    len1, len2 = len(str1), len(str2)
+
+    for p in range(len1):
+        for q in range(len2):
+            tmp = 0
+            while p + tmp < len1 and q + tmp < len2 \
+                    and str1[p + tmp] == str2[q + tmp]:
+                tmp += 1
+
+            if tmp > max_len:
+                max_len, pos1, pos2 = tmp, p, q
+
+    return max_len, pos1, pos2
+
+
+def similar_char(str1, str2):
+    """
+    return the total length of longest string both in str1 and str2
+    """
+    max_len, pos1, pos2 = similar_str(str1, str2)
+    total = max_len
+
+    if max_len != 0:
+        if pos1 and pos2:
+            total += similar_char(str1[:pos1], str2[:pos2])
+
+        if pos1 + max_len < len(str1) and pos2 + max_len < len(str2):
+            total += similar_char(str1[pos1 + max_len:], str2[pos2 + max_len:]);
+
+    return total
+
+
+def similar_text(str1, str2):
+    """
+    return a int value in [0, 100], which stands for match level
+    """
+    if not (isinstance(str1, str) or isinstance(str1, unicode)):
+        raise TypeError("must be str or unicode")
+    elif not (isinstance(str2, str) or isinstance(str2, unicode)):
+        raise TypeError("must be str or unicode")
+    elif len(str1) == 0 and len(str2) == 0:
+        return 0.0
+    else:
+        return int(similar_char(str1, str2) * 200.0 / (len(str1) + len(str2)))
+
+# EXECUTE
+execute()
