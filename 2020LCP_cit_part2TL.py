@@ -24,11 +24,12 @@ instruction_color = '#9999FF'
 
 ##todo:
 # - have recall task three times (right now just once)
-# - add CIT warning for EXP-Group
+# - add CIT warning for EXP-Group 
 # - specify and add instructions etc.
 # - double check if conditions and respective items are correct
 # - decrease font size? (some items two rows right now)
-# - think about ending() (remove dcit etc?)
+# - think about ending() (remove dcit etc. ?)
+# - practice after / at all?
 
 
 distraction_text = "Bearbeiten Sie nun bitte die Ihnen auf einem Blatt gereichten Aufgaben. Sie haben dafür 10 Minuten Zeit. Drücken Sie anschließend die Leertaste um fortzufahren."
@@ -53,9 +54,9 @@ irrelevants_innocent = [u"Beiger Anzug", u"Rote Weste", u"Hellbrauner Gürtel", 
 
 dummy_list_numbers = [0,1,2,3,4,5]
 
-key_pair = { 'always' : { 'nontarg': 'k', 'target' : 'l', 'descr' : 'K (linker Zeigefinger) und L (rechter Zeigefinger)' }}
+key_pair = { 'always' : { 'nontarg': 'e', 'target' : 'i', 'descr' : 'E (linker Zeigefinger) und I (rechter Zeigefinger)' }}
 
-
+rounds = 1
 
 if testing:
     escape_key = 'escape'
@@ -112,9 +113,9 @@ def ending():
     if len(all_main_rts['probe']) > 1 and len(all_main_rts['irrelevant']) > 1:
         dcit = (mean(all_main_rts['probe']) - mean(all_main_rts['irrelevant'])) / std(all_main_rts['irrelevant'])
         if dcit > 0.2:
-            end_feed = '\n\nBezüglich Ihrer Ergebnisse: Ihre Reaktionszeit war für die PROBES signifikant langsamer als für andere Namen. Also vermuten wir, dass das Ihr richtiger Name ist.'
+            end_feed = '\n\nBezüglich Ihrer Ergebnisse: Ihre Reaktionszeit war für die PROBES signifikant langsamer als für andere Namen. Also haben wir Sie überführt.'
         else:
-            end_feed = '\n\nBezüglich Ihrer Ergebnisse: Ihre Reaktionszeit war für die PROBES nicht signifikant langsamer als für andere Namen. Also vermuten wir, dass das nicht Ihr Name ist.'
+            end_feed = '\n\nBezüglich Ihrer Ergebnisse: Ihre Reaktionszeit war für die PROBES nicht signifikant langsamer als für andere Namen. Also konnten wir Ihnen nichts nachweisen.'
     else:
         dcit = '-'
         end_feed = ''
@@ -149,7 +150,7 @@ def set_block_info():
     global block_info, block_num, incorrect, tooslow, move_on
     move_on = '\n\nUm weiterzugehen, drücken Sie die Leertaste.\n\nFalls nötig, drücken Sie die Taste ENTER (oder eine der Pfeiltasten) um die vollständigen Anweisungen erneut zu lesen.'
     block_info = [""]
-    if block_num == 1:
+    if block_num == 1: 
         block_info.append( 'Im Folgenden kategorisieren Sie bitte Wortpaare, die sie in der vorherigen Aufgabe auswendig gelernt und wiedergegeben haben als vertraut, alle anderen als unvertraut. \n\nUm weiterzugehen, drücken Sie die Leertaste.' + move_on)
     elif block_num == 2:
         if condition in [1, 2, 3, 4]:
@@ -158,22 +159,11 @@ def set_block_info():
         block_info.append( ' Die Aufgabe bleibt genau dieselbe.' + move_on)
 
 def start_input():
-    global subj_id, dems, condition, gender, categories, true_probes, true_forename, true_surname, name_ausgeben, decknamen
+    global subj_id, dems, condition, start_date
     input_box = Dlg(title=u'Grunddaten', labelButtonOK=u'OK', labelButtonCancel=u'Abbrechen')
     input_box.addText(text=u'')
-    input_box.addField(label=u'c.', tip = '1-12')
+    input_box.addField(label=u'c.', tip = '1-8')
     input_box.addField(label=u'VP', tip = 'Ziffern')
-    input_box.addText(text=u'')
-    input_box.addText(text=u'Bitte ausfüllen:')
-    input_box.addField(label=u'Geschlecht', initial = '', choices=[u'männlich',u'weiblich'] )
-    input_box.addField(label=u'Alter', tip = 'Ziffern')
-    input_box.addField(label=u'Herkunftsland', initial = '', choices=[u'Österreich',u'Deutschland',u'Schweiz'] )
-    input_box.addField(label=u'Händigkeit', initial = '', choices=[u'rechtshändig',u'linkshändig'], tip = '(bevorzugte Hand zum Schreiben)' )
-    input_box.addText(text=u'')
-    input_box.addText(text=u'Ihr Name:')
-    input_box.addText(text=u'(Jeweils nur einen Namen, kein Doppelname!)')
-    input_box.addField(label=u'Vorname')
-    input_box.addField(label=u'Nachname')
     input_box.addText(text=u'')
     input_box.show()
     if input_box.OK:
@@ -186,14 +176,21 @@ def start_input():
         ## CONDITIONS:
         # use condition nos. for control vs. experimental group
         # plus for guilty vs innocent block first
-        #
+        # 1       probes 1 + exp + guilty first
+        # 2       probes 2 + exp + guilty first
+        # 3       probes 1 + exp + inno first
+        # 4       probes 2 + exp + inno first 
+        # 5       probes 1 + control + guilty first 
+        # 6       probes 2 + control + guilty first 
+        # 7       probes 1 + control + inno first
+        # 8       probes 2 + control + inno first
         # check if variables correctly given
-        if condition not in range(1,13): # range(1,13):
+        if condition not in range(1,8): # range(1,13):
             if testing:
                 condition = 1 # set value for testing to skip Dlg input box
                 print("condition was not set, now set to " + str(condition) + " for testing.")
             else:
-                print("condition was not set correctly (should be 1/2/3/4)")
+                print("condition was not set correctly (should be 1/2/3/4/5/6/7/8)")
                 stop = True
         try:
             subj_num = int(input_box.data[1])
@@ -204,71 +201,18 @@ def start_input():
             else:
                 print("vp (subject number) was not set correctly (should be simple number)")
                 stop = True
-        try:
-            age = int(input_box.data[3])
-        except ValueError:
-            if testing:
-                age = 11 # set value for testing to skip Dlg input box
-                print("age was not set, now set to " + str(age) + " for testing.")
-            else:
-                print("age was not set correctly (should be simple number)")
-                stop = True
-        true_forename = input_box.data[6]
-        true_surname = input_box.data[7]
-        if len(true_forename) < 2:
-            print('forename less than 2 chars')
-            if testing:
-                true_forename = 'Till'
-            else:
-                stop = True
-        elif not true_forename.isalpha():
-            print('forename is not alphabetic only')
-            stop = True
-
-        if len(true_surname) < 2:
-            print('surname less than 2 chars')
-            if testing:
-                true_surname = 'Lubczyk'
-            else:
-                stop = True
-        elif not true_surname.isalpha():
-            print('surname is not alphabetic only')
-            stop = True
-        if stop:
-            print("\nTry again with correct inputs.\n")
-            quit()
         subj_id = str(subj_num).zfill(2) + "_" + str(strftime("%Y%m%d%H%M%S", gmtime()))
-        if input_box.data[2] == 'weiblich':
-            gender = 2
-        else:
-            gender = 1
-        dems = 'dems/gender/age/country/hand/reps1/rep2/rep3/rep6/drtn/dcit' + '\t' + str(gender) + '/' + str(age)  + '/' + input_box.data[4]  + '/' + input_box.data[5]
-
-        categories = ['Name', 'Deckname', 'Operation', 'Akte', 'Pläne', 'Straße']
-        true_probes = {categories[0]: probes_guilty[0],  categories[1]: probes_guilty[1], categories[2] : probes_guilty[2], categories[3] : probes_guilty[3], categories[4]: probes_guilty[4], categories[5]: probes_guilty[5] }
-        confirm_dlg()
-    else:
-        quit()
-
-def confirm_dlg():
-    global start_date
-    confirm_input = Dlg(title=u'Confirmation', labelButtonOK=u'JA', labelButtonCancel=u'Nein')
-    input_feed = u'Bitte bestätigen Sie, dass Ihr Vor- und Nachname richtig geschrieben wird: ' + true_forename.upper() + ' ' + true_surname.upper()
-    confirm_input.addText(text='')
-    confirm_input.addText(text=input_feed)
-    confirm_input.addText(text='')
-    confirm_input.show()
-    if confirm_input.OK:
+        dems = 'sbjID + condition' + str(subj_num) + str(condition)
         start_date = datetime.now()
-    else:
-        start_input()
+
+
 
 
 def trm(raw_inp):
     return [w for w in raw_inp.replace(',', ' ').split(' ') if w != ''][:2]
 
 def target_check_one():
-    global condition, required, typedin
+    global condition, required, typedin, rounds
     show_instruction('Im Folgenden wird Ihnen erneut eine Liste an Items präsentiert, die Sie danach wiedergeben müssen' + move_on)
     required_items = []
     if condition in [1,2,5,6]:
@@ -312,13 +256,14 @@ def target_check_one():
         typedin_words = trm(typedin)
         add_recall_resp()
         if counter <= 5:
-            show_instruction("Mit Leertaste zum nächsten Item")
+            wait(0.5)
         else:
             break
+    rounds += 1
 
 
 def target_check_two():
-    global condition, required, typedin
+    global condition, required, typedin, rounds
     required_items = []
     show_instruction('Im Folgenden wird Ihnen erneut eine Liste an Items präsentiert, die Sie danach wiedergeben müssen' + move_on)
     if condition in [1,2,5,6]:
@@ -362,9 +307,10 @@ def target_check_two():
         typedin_words = trm(typedin)
         add_recall_resp()
         if counter <= 5:
-            show_instruction("Mit Leertaste zum nächsten Item")
+            wait(0.5)
         else:
             break
+    rounds += 1
 
 
 
@@ -406,9 +352,9 @@ def basic_variables():
         # 1       probes 1 + exp + guilty first
         # 2       probes 2 + exp + guilty first
         # 3       probes 1 + exp + inno first
-        # 4       probes 2 + exp + inno first
-        # 5       probes 1 + control + guilty first
-        # 6       probes 2 + control + guilty first
+        # 4       probes 2 + exp + inno first 
+        # 5       probes 1 + control + guilty first 
+        # 6       probes 2 + control + guilty first 
         # 7       probes 1 + control + inno first
         # 8       probes 2 + control + inno first
     block_num = 0
@@ -423,7 +369,7 @@ def create_file():
     global data_out
     f_name = 'exp_lcp_cit_maintask' + str(condition) + "_" + "_" + str(guilt) + "_ord" + "_" + subj_id + '.txt'
     data_out=open(f_name, 'a', encoding='utf-8')
-    data_out.write( '\t'.join( [ "subject_id", "condition", "width", "phase", "block_number", "trial_number", "stimulus_shown", "category", "stim_type", "response_key", "rt_start", "incorrect", "too_slow", "press_duration", "isi", "date_in_ms" ] ) + "\n" )
+    data_out.write( '\t'.join( [ "subject_id", "condition", "phase", "block_number", "trial_number", "stimulus_shown",  "stim_type", "response_key", "rt_start", "incorrect", "too_slow", "press_duration", "isi", "date_in_ms" ] ) + "\n" )
     print("File created:", f_name)
 
 def str_if_num( num_val ):
@@ -440,7 +386,7 @@ def add_resp():
 
 def add_recall_resp():
     global condition, required
-    data_out.write( '\t'.join( [ str(subj_id), str(condition), str(required), str(typedin), str(similar_text(str(required.upper()), str(typedin)))]) + '\n' )
+    data_out.write( '\t'.join( [ str(subj_id), str(condition), str(required), str(typedin), str(similar_text(str(required.upper()), str(typedin)))]) + '   round: ' + str(rounds) + '\n' )
     print(required, str(typedin), similar_text(str(required.upper()), str(typedin)))
 
 def start_with_space():
@@ -481,16 +427,20 @@ def next_block():
         if condition in [1, 4, 5, 8]:
             block1_items = create_items(probes_guilty, targets_guilty, irrelevants_guilty, 3)
             target_check_one()
+            target_check_one()
+            target_check_one()
         elif condition in [2, 3, 6, 7]:
             block1_items = create_items(probes_innocent, targets_innocent, irrelevants_innocent, 3)
             target_check_one()
         blck_itms = block1_items
         ddline = main_ddline
-        #block_num += 1
+        #block_num += 1    
     elif block_num == 3:
         crrnt_phase = 'main'
         if condition in [1, 4, 5, 8]:
             block2_items = create_items(probes_innocent, targets_innocent, irrelevants_innocent, 3)
+            target_check_two()
+            target_check_two()
             target_check_two()
         elif condition in [2, 3, 6, 7]:
             block2_items = create_items(probes_guilty, targets_guilty, irrelevants_guilty, 3)
@@ -514,10 +464,14 @@ def show_instruction(instruction_text):
 
 def show_block_instr():
     if block_num == 1:
-        instruction_page.setText( 'Training Block ? With Instructions? \n for now six items (probe, target, 4xirr)  \n\n Drücken Sie die rechte Taste für GRÜNER HUT und die linke Taste für alle anderen Wortpaare. \n' + key_pair['always']['descr'] )
-    elif block_num == 2:
-        instruction_page.setText( 'Block 1 \n Drücke Sie die rechte Taste für die von Ihnen soeben wiedergegebenen Wortpaare, für alle anderen die linke Taste.  \n' + key_pair['always']['descr'])
-    elif block_num == 3:
+        instruction_page.setText( 'Training Block ? With Instructions? \nfor now six items (probe, target, 4xirr)  \n\nDrücken Sie die rechte Taste für GRÜNER HUT und die linke Taste für alle anderen Wortpaare. \n' + key_pair['always']['descr'] )
+    elif block_num == 2 and condition in [1, 2, 3, 4]: 
+        instruction_page.setText( 'Block 1 \nDrücke Sie die rechte Taste für die von Ihnen soeben wiedergegebenen Wortpaare, für alle anderen die linke Taste.  \n' + key_pair['always']['descr'] + text_warning_cit)
+    elif block_num == 2 and condition in [5, 6, 7, 8]:
+        instruction_page.setText( 'Block 1 \nDrücke Sie die rechte Taste für die von Ihnen soeben wiedergegebenen Wortpaare, für alle anderen die linke Taste.  \n' + key_pair['always']['descr'])
+    elif block_num == 3 and condition in [1, 2, 3, 4]: 
+        instruction_page.setText('Block 2'+ text_warning_cit)
+    elif block_num == 3 and condition in [5, 6, 7, 8]: 
         instruction_page.setText('Block 2')
     instruction_page.draw()
     win.flip()
@@ -562,14 +516,14 @@ def run_block():
             rt_start = response[0][1]
             end_on_esc(resp_key)
             if resp_key == targetkey:
-                if stim_type in ("target"):
+                if stim_type in ("target"): 
                     incorrect = 0
                     tooslow = 0
                 else:
                     incorrect += 1
                     show_false()
             elif resp_key == nontargetkey:
-                if stim_type[:10] in ("probe","irrelevant"):
+                if stim_type[:10] in ("probe","irrelevant"): 
                     incorrect = 0
                     tooslow = 0
                 else:
