@@ -23,8 +23,8 @@ instruction_color = '#9999FF'
 ############ MAIN ITEMS - paste from JS
 
 
-probe_crime_text_1 = "Gebe dich als Person mit dem Namen Tim Koch aus und sende eine Nachricht an die Person mit dem Decknamen 'Blaue Jacke'.\nIn dieser Nachricht schreibst du 'Blaue Jacke' es gehe um die Operation Kuh und du bittest darum, die Regen Akte mit den U-Boot Plänen zur Hai Straße zu bringen.\n\n Leertaste drücken um fortzufahren.\n Im Folgenden werden die Details dieser Anordnung abgefragt."
-probe_crime_text_2 = "Gebe dich als Person mit dem Namen Paul Nowak aus und sende eine Nachricht an die Person mit dem Decknamen 'Weißes Shirt'.\nIn dieser Nachricht schreibst du 'Weißes Shirt' es gehe um die Operation Fichte und du bittest darum, die Eulen Akte mit den Messing Plänen zur Löwen Straße zu bringen.\n\n Leertaste drücken um fortzufahren.\n Im Folgenden werden die Details dieser Anordnung abgefragt."
+probe_crime_text_1 = "Gebe dich als Person mit dem Namen Tim Koch aus und sende eine Nachricht via E-Mail an die Person mit dem Decknamen 'Blaue Jacke'.\nIn dieser Nachricht schreibst du 'Blaue Jacke' es gehe um die Operation Kuh und du bittest darum, die Regen Akte mit den U-Boot Plänen zur Hai Straße zu bringen.\n\n Leertaste drücken um fortzufahren.\n Im Folgenden werden die Details dieser Anordnung in drei Runden ( = jedes Detail also insgesamt dreimal) abgefragt."
+probe_crime_text_2 = "Gebe dich als Person mit dem Namen Paul Nowak aus und sende eine Nachricht via E-Mail an die Person mit dem Decknamen 'Weißes Shirt'.\nIn dieser Nachricht schreibst du 'Weißes Shirt' es gehe um die Operation Fichte und du bittest darum, die Eulen Akte mit den Messing Plänen zur Löwen Straße zu bringen.\n\n Leertaste drücken um fortzufahren.\n Im Folgenden werden die Details dieser Anordnung in drei Runden ( = jedes Detail also insgesamt dreimal) abgefragt."
 probe_crime_list_1 = ' Username : Tim Koch\n\n Deckname : Blaue Jacke\n\n Operation : Operation Kuh\n\n Akte : Regen Akte\n\n Pläne : U Boot Pläne\n\n Ort : Hai Strasse'
 probe_crime_list_2 = ' Username : Paul Nowak\n\n Deckname : Weißes Shirt\n\n Operation : Operation Fichte\n\n Akte : Eulen Akte\n\n Pläne : Messing Pläne\n\n Ort : Löwen Strasse'
 
@@ -34,7 +34,7 @@ dummy_list_numbers = [0, 1, 2, 3, 4, 5]
 
 training_recall_item = {0 : 'Username', 1 : 'Deckname', 2 : 'Operation', 3 : 'Akte', 4 : 'Pläne', 5 : 'Ort'}
 
-
+rounds = 1
 
 
 if testing:
@@ -52,9 +52,12 @@ def execute():
     # window opens
     create_file() # created output file
     training_instruction()
+    which_round_indicator()
     training_software()
+    which_round_indicator()
     training_list()
     training_software()
+    which_round_indicator()
     training_list()
     training_software()
     final_slide()
@@ -68,8 +71,13 @@ def execute():
     waitKeys(keyList = ['b']) # press B to end the exp (prevents subject from closing window)
     quit
 
-
-
+def which_round_indicator():
+    if rounds == 1:
+        show_instruction("Es folgt nun die erste Runde, in der die soeben gezeigten Wortpaare abgefragt werden.\nLeertaste drücken, um fortzufahren.")
+    elif rounds == 2:
+        show_instruction("Nun folgt die zweite Runde. Erneut werden Ihnen die Wortpaare gezeigt, danach werden diese erneut abgefragt. \nLeertaste drücken, um fortzufahren.")
+    elif rounds == 3: 
+        show_instruction("Es folgt nun die dritte und letzte Runde. Die Wortpaare werden noch einmal gezeigt, bevor diese ein letztes Mal abgefragt werden.\nLeertaste drücken, um fortzufahren.")
 def crime_text():
     show_instruction(probe_crime_text)
 
@@ -80,9 +88,9 @@ def training_instruction():
         probe_crime_list = probe_crime_list_1
     else:
         probe_crime_text = probe_crime_text_2
-        probe_crime_list = probe_crime_list_2# do it three times, no matter if correct answers, randomly assigned which probe set
+        probe_crime_list = probe_crime_list_2
     show_instruction('Lesen Sie den folgenden Text mehrmals aufmerksam durch. Sie werden im Folgenden zu den Details aus dem Text gefragt.\n\n' + probe_crime_text)
-    show_instruction('Drücken Sie die Leertaste, wenn Sie die unten stehenden Items gründlich auswendig gelernt haben.\n\n' + probe_crime_list)
+    show_instruction('Drücken Sie die Leertaste, wenn Sie die unten stehenden Items gründlich auswendig gelernt haben.\n\n' +  probe_crime_list)
 
 def training_list():
     global condition
@@ -90,10 +98,10 @@ def training_list():
         probe_crime_list = probe_crime_list_1
     else:
         probe_crime_list = probe_crime_list_2
-    show_instruction('Drücken Sie die Leertaste, wenn Sie die unten stehenden Items gründlich auswendig gelernt haben.\n\n' + probe_crime_list)
+    show_instruction('Drücken Sie die Leertaste, wenn Sie die unten stehenden Items gründlich auswendig gelernt haben.\n\n' +  probe_crime_list)
 
 def training_software():
-    global condition, required, typedin
+    global condition, required, typedin, rounds
     required_items = []
     if condition % 2 != 0:
         required_items = crime_list_1
@@ -132,13 +140,15 @@ def training_software():
             elif char == 'comma':
                  typedin += ','
         typedin_words = trm(typedin)
-        #print(required, "\n", str(typedin))
-        #print(similar_text(str(required.upper()), str(typedin)))
         add_resp()
         if counter <= 5:
-            show_instruction("Mit Leertaste zum nächsten Item")
+            wait(0.5)
         else:
             break
+    rounds += 1
+
+
+
 
 def final_slide():
     show_instruction("Vielen Dank, wenden Sie sich nun bitte an die Versuchsleitung.")
@@ -155,10 +165,10 @@ def set_screen(): # screen properties
 
 
 def start_input():
-    global subj_id, dems, condition, gender, categories, true_probes, true_forename, true_surname, name_ausgeben, decknamen
+    global subj_id, dems, condition, gender
     input_box = Dlg(title=u'Grunddaten', labelButtonOK=u'OK', labelButtonCancel=u'Abbrechen')
     input_box.addText(text=u'')
-    input_box.addField(label=u'c.', tip = '1-12')
+    input_box.addField(label=u'c.', tip = '1-8')
     input_box.addField(label=u'VP', tip = 'Ziffern')
     input_box.addText(text=u'')
     input_box.addText(text=u'Bitte ausfüllen:')
@@ -166,11 +176,6 @@ def start_input():
     input_box.addField(label=u'Alter', tip = 'Ziffern')
     input_box.addField(label=u'Herkunftsland', initial = '', choices=[u'Österreich',u'Deutschland',u'Schweiz'] )
     input_box.addField(label=u'Händigkeit', initial = '', choices=[u'rechtshändig',u'linkshändig'], tip = '(bevorzugte Hand zum Schreiben)' )
-    input_box.addText(text=u'')
-    input_box.addText(text=u'Ihr Name:')
-    input_box.addText(text=u'(Jeweils nur einen Namen, kein Doppelname!)')
-    input_box.addField(label=u'Vorname')
-    input_box.addField(label=u'Nachname')
     input_box.addText(text=u'')
     input_box.show()
     if input_box.OK:
@@ -183,14 +188,21 @@ def start_input():
         ## CONDITIONS:
         # use condition nos. for control vs. experimental group
         # plus for guilty vs innocent block first
-        #
+        # 1       probes 1 + exp + guilty first
+        # 2       probes 2 + exp + guilty first
+        # 3       probes 1 + exp + inno first
+        # 4       probes 2 + exp + inno first 
+        # 5       probes 1 + control + guilty first 
+        # 6       probes 2 + control + guilty first 
+        # 7       probes 1 + control + inno first
+        # 8       probes 2 + control + inno first
         # check if variables correctly given
-        if condition not in range(1,13): # range(1,13):
+        if condition not in range(1,8): 
             if testing:
                 condition = 1 # set value for testing to skip Dlg input box
                 print("condition was not set, now set to " + str(condition) + " for testing.")
             else:
-                print("condition was not set correctly (should be 1/2/3/4)")
+                print("condition was not set correctly (should be 1/2/3/4/5/6/7/8)")
                 stop = True
         try:
             subj_num = int(input_box.data[1])
@@ -210,27 +222,6 @@ def start_input():
             else:
                 print("age was not set correctly (should be simple number)")
                 stop = True
-        true_forename = input_box.data[6]
-        true_surname = input_box.data[7]
-        if len(true_forename) < 2:
-            print('forename less than 2 chars')
-            if testing:
-                true_forename = 'Till'
-            else:
-                stop = True
-        elif not true_forename.isalpha():
-            print('forename is not alphabetic only')
-            stop = True
-
-        if len(true_surname) < 2:
-            print('surname less than 2 chars')
-            if testing:
-                true_surname = 'Lubczyk'
-            else:
-                stop = True
-        elif not true_surname.isalpha():
-            print('surname is not alphabetic only')
-            stop = True
         if stop:
             print("\nTry again with correct inputs.\n")
             quit()
@@ -239,32 +230,18 @@ def start_input():
             gender = 2
         else:
             gender = 1
-        dems = 'dems/gender/age/country/hand/reps1/rep2/rep3/rep6/drtn/dcit' + '\t' + str(gender) + '/' + str(age)  + '/' + input_box.data[4]  + '/' + input_box.data[5]
-
-        categories = ['Name', 'Deckname', 'Operation', 'Akte', 'Pläne', 'Straße']
-        confirm_dlg()
+        dems = 'dems/gender/age/country/hand/drtn/dcit' + '\t' + str(gender) + '/' + str(age)  + '/' + input_box.data[4]  + '/' + input_box.data[5]
+        start_date = datetime.now()
     else:
         quit()
 
-def confirm_dlg():
-    global start_date
-    confirm_input = Dlg(title=u'Confirmation', labelButtonOK=u'JA', labelButtonCancel=u'Nein')
-    input_feed = u'Bitte bestätigen Sie, dass Ihr Vor- und Nachname richtig geschrieben wird: ' + true_forename.upper() + ' ' + true_surname.upper()
-    confirm_input.addText(text='')
-    confirm_input.addText(text=input_feed)
-    confirm_input.addText(text='')
-    confirm_input.show()
-    if confirm_input.OK:
-        start_date = datetime.now()
-    else:
-        start_input()
 
 
 def create_file():
     global data_out
     f_name = 'exp_lcp_cit_recall_task' + str(condition) + "_" + "_" + str(condition) + "_ord" + "_" + subj_id + '.txt'
     data_out=open(f_name, 'a', encoding='utf-8')
-    data_out.write( '\t'.join( [ "subject_id", "condition", "probe_item", "typed_in", "similarityscore"  ] ) + "\n" )
+    data_out.write( '\t'.join( [ "subject_id", "condition", "probe_item", "typed_in", "similarityscore", "rounds"  ] ) + "\n" )
     print("File created:", f_name)
 
 
@@ -369,7 +346,7 @@ def trm(raw_inp):
 
 def add_resp():
     global condition, required
-    data_out.write( '\t'.join( [ str(subj_id), str(condition), str(required), str(typedin), str(similar_text(str(required.upper()), str(typedin)))]) + '\n' )
+    data_out.write( '\t'.join( [ str(subj_id), str(condition), str(required), str(typedin), str(similar_text(str(required.upper()), str(typedin)))]) + '   ' +  str(rounds) + '\n' )
     print(required, str(typedin), similar_text(str(required.upper()), str(typedin)))
 
 
