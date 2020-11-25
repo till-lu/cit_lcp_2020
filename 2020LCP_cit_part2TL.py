@@ -22,14 +22,7 @@ isi_min_max = (500, 800)
 instruction_color = '#9999FF'
 ############ MAIN ITEMS - paste from JS
 
-##todo:
-# - have recall task three times (right now just once)
-# - add CIT warning for EXP-Group 
-# - specify and add instructions etc.
-# - double check if conditions and respective items are correct
-# - decrease font size? (some items two rows right now)
-# - think about ending() (remove dcit etc. ?)
-# - practice after / at all?
+
 
 
 distraction_text = "Bearbeiten Sie nun bitte die Ihnen auf einem Blatt gereichten Aufgaben. Sie haben dafür 10 Minuten Zeit. Drücken Sie anschließend die Leertaste um fortzufahren."
@@ -54,7 +47,9 @@ irrelevants_innocent = [u"Beiger Anzug", u"Rote Weste", u"Hellbrauner Gürtel", 
 
 dummy_list_numbers = [0,1,2,3,4,5]
 
-key_pair = { 'always' : { 'nontarg': 'e', 'target' : 'i', 'descr' : 'E (linker Zeigefinger) und I (rechter Zeigefinger)' }}
+training_target = 'Grüner Hut'
+
+key_pair = { 'always' : { 'nontarg': 'f', 'target' : 'j', 'descr' : 'F (linker Zeigefinger) und J (rechter Zeigefinger)' }}
 
 rounds = 1
 
@@ -97,9 +92,9 @@ def crime_text():
 def cit_warning_text():
     show_instruction(text_warning_cit)
 
-text_warning_cit = "Im Folgenden wird ein Reaktionszeit-basierter Lügentest durchgeführt. Achten Sie auf ... etc. " # for experimental group,
+text_warning_cit = "ACHTUNG: Im nachfolgenden Test werden Sie auch Wörter sehen, die Sie für das Senden der kriminellen E-Mail gelernt haben. Forschungen haben gezeigt, dass die Reaktionszeit auf im Zusammenhang mit Straftaten stehenden Begriffen langsamer ist als auf andere. \nDies bedeutet, dass Sie im Test länger für eine Antwort brauchen würden, wenn das gezeigte Wort aus der E-Mail stammt. \n\nVersuchen Sie daher, eine solche Verzögerung zu vermeiden und zu „vertuschen“, dass Sie die entsprechenden Wörter schon einmal gesehen haben." # for experimental group,
 
-
+text_warning_cit2 = "Nun folgt der vorhin angesprochene Test, in dem auch Wörter aus der kriminellen E-Mail gezeigt werden. Versuchen Sie, so gut es Ihnen möglich ist, zu vertuschen, dass Sie die Wörter aus der kriminellen E-Mail schon einmal gesehen haben."
 
 training_recall_item = {0 : 'Username', 1 : 'Deckname', 2 : 'Operation', 3 : 'Akte', 4 : 'Pläne', 5 : 'Ort'}
 
@@ -119,7 +114,7 @@ def ending():
     else:
         dcit = '-'
         end_feed = ''
-    info = 'Danke für die Teilnahme. Wenn Sie möchten, können Sie gehen, aber bitte seien Sie leise dabei.\n\nKurze Information über den Test:\n\nIn dieser Studie versuchen wir, Ihre wirklichen selbstbezogenen Details (z.B. Ihren tatsächlichen Vornamen) von solchen zu unterscheiden, die Ihnen nicht zugehörig sind (z.B. andere Vornamen). Ziel dieses Tests ist es, anhand von Reaktionszeiten herauszufinden, wenn eine Person versucht, bestimmte Daten zu verschleiern bzw. zu verheimlichen. Dies geschieht auf Basis der Vermutung, dass Reaktionszeiten für die Ihnen präsentierten eigenen Namen langsamer ausfallen, als im Falle anderer Namen. Hauptanliegen dieser Studie ist es, zu zeigen, ob dies besser mit der Aufforderung zu einer möglichst schnellen Reaktion oder zu einer möglichst genauen Reaktion funktioniert.' + end_feed + '\n\nFür weitere Informationen wenden Sie sich bitte an den Versuchsleiter (oder schreiben Sie eine E-mail an Gaspar Lukacs).'
+    info = 'Danke für die Teilnahme. Wenn Sie möchten, können Sie gehen, aber bitte seien Sie leise dabei.\n\nKurze Information über den Test:\n\nIn dieser Studie versuchen wir, Ihre wirklichen selbstbezogenen Details (z.B. Ihren tatsächlichen Vornamen) von solchen zu unterscheiden, die Ihnen nicht zugehörig sind (z.B. andere Vornamen). Ziel dieses Tests ist es, anhand von Reaktionszeiten herauszufinden, wenn eine Person versucht, bestimmte Daten zu verschleiern bzw. zu verheimlichen. Dies geschieht auf Basis der Vermutung, dass Reaktionszeiten für die Ihnen präsentierten eigenen Namen langsamer ausfallen, als im Falle anderer Namen. Hauptanliegen dieser Studie ist es, zu zeigen, ob dies besser mit der Aufforderung zu einer möglichst schnellen Reaktion oder zu einer möglichst genauen Reaktion funktioniert.\n\nFür weitere Informationen wenden Sie sich bitte an den Versuchsleiter (oder schreiben Sie eine E-mail an Gaspar Lukacs).'
 
     data_out.write(dems + "/" +
       "/".join( [ str(nmbr) for nmbr in
@@ -136,8 +131,8 @@ def set_screen(): # screen properties
     global win, start_text, left_label, right_label, center_disp, instruction_page
     win = Window([1280, 1000], color='Black', fullscr = 1, units = 'pix', allowGUI = True) # 1280 1024
     start_text = TextStim(win, color=instruction_color, font='Verdana', text = u'Um anzufangen, bitte die Leertaste drücken.', pos = [0,-300], height=35, bold = True, wrapWidth= 1100)
-    left_label = TextStim(win, color='white', font='Verdana', text = 'unvertraut', pos = [-350,-160], height=35, alignHoriz='center')
-    right_label = TextStim(win, color='white', font='Verdana', text = 'vertraut', pos = [350,-160], height=35, alignHoriz='center')
+    left_label = TextStim(win, color='white', font='Verdana', text = 'nein', pos = [-350,-160], height=35, alignHoriz='center')
+    right_label = TextStim(win, color='white', font='Verdana', text = 'ja', pos = [350,-160], height=35, alignHoriz='center')
     center_disp = TextStim(win, color='white', font='Arial', text = '', height = 60)
     instruction_page = TextStim(win, wrapWidth = 1200, height = 28, font='Verdana', color = instruction_color)
 
@@ -150,13 +145,13 @@ def set_block_info():
     global block_info, block_num, incorrect, tooslow, move_on
     move_on = '\n\nUm weiterzugehen, drücken Sie die Leertaste.\n\nFalls nötig, drücken Sie die Taste ENTER (oder eine der Pfeiltasten) um die vollständigen Anweisungen erneut zu lesen.'
     block_info = [""]
-    if block_num == 1: 
-        block_info.append( 'Im Folgenden kategorisieren Sie bitte Wortpaare, die sie in der vorherigen Aufgabe auswendig gelernt und wiedergegeben haben als vertraut, alle anderen als unvertraut. \n\nUm weiterzugehen, drücken Sie die Leertaste.' + move_on)
-    elif block_num == 2:
-        if condition in [1, 2, 3, 4]:
-            block_info.append(text_warning_cit + move_on)
-    elif block_num == 3:
-        block_info.append( ' Die Aufgabe bleibt genau dieselbe.' + move_on)
+#    if block_num == 1: 
+#        block_info.append( 'Im Folgenden kategorisieren Sie bitte Wortpaare, die sie in der vorherigen Aufgabe auswendig gelernt und wiedergegeben haben als vertraut, alle anderen als unvertraut. \n\nUm weiterzugehen, drücken Sie die Leertaste.' + move_on)
+#    elif block_num == 2:
+#        if condition in [1, 2, 3, 4]:
+#            block_info.append(text_warning_cit + move_on)
+#    elif block_num == 3:
+#        block_info.append( ' Die Aufgabe bleibt genau dieselbe.' + move_on)
 
 def start_input():
     global subj_id, dems, condition, start_date
@@ -176,14 +171,14 @@ def start_input():
         ## CONDITIONS:
         # use condition nos. for control vs. experimental group
         # plus for guilty vs innocent block first
-        # 1       probes 1 + exp + guilty first
-        # 2       probes 2 + exp + guilty first
-        # 3       probes 1 + exp + inno first
-        # 4       probes 2 + exp + inno first 
-        # 5       probes 1 + control + guilty first 
-        # 6       probes 2 + control + guilty first 
-        # 7       probes 1 + control + inno first
-        # 8       probes 2 + control + inno first
+        # 1       probes 1 + exp + crime first
+        # 2       probes 2 + exp + nocrime first
+        # 3       probes 1 + exp + nocrime first
+        # 4       probes 2 + exp + crime first 
+        # 5       probes 1 + control + crime first 
+        # 6       probes 2 + control + no crime first 
+        # 7       probes 1 + control + no crime first
+        # 8       probes 2 + control + crime first first
         # check if variables correctly given
         if condition not in range(1,8): # range(1,13):
             if testing:
@@ -213,14 +208,33 @@ def trm(raw_inp):
 
 def target_check_one():
     global condition, required, typedin, rounds
-    show_instruction('Im Folgenden wird Ihnen erneut eine Liste an Items präsentiert, die Sie danach wiedergeben müssen' + move_on)
+    if rounds == 1:
+        show_instruction('Im Folgenden wird Ihnen erneut eine Liste an Items präsentiert, die Sie danach, erneut in drei Runden, wiedergeben müssen. \n\nDrücken Sie die Leertaste, um fortzufahren.')
     required_items = []
     if condition in [1,2,5,6]:
         required_items = targets_guilty
-        show_instruction('Drücken Sie die Leertaste, wenn Sie die unten stehenden Items gründlich auswendig gelernt haben.\n\n' + target_guilty_list)
+        if rounds == 1:
+            if condition in [1]:
+                show_instruction(text_warning_cit)
+            show_instruction('Drücken Sie die Leertaste, wenn Sie die unten stehenden Items gründlich auswendig gelernt haben.\n\n' + target_guilty_list)
+        elif rounds == 2: 
+            if condition in [1]:
+                show_instruction('Beachten Sie erneut:\n\n' + text_warning_cit)
+            show_instruction('Es folgt nun die zweite Runde.\n\n Drücken Sie die Leertaste, wenn Sie die unten stehenden Items gründlich auswendig gelernt haben.\n\n' + target_guilty_list)
+        elif rounds == 3:
+            show_instruction('Es folgt die letzte Runde des Abfragetests. Lernen Sie unten stehenden Items gründlich auswendig, drücken Sie Leertaste, um fortzufahren. \n\n' + target_guilty_list)
     else:
         required_items = targets_innocent
-        show_instruction('Drücken Sie die Leertaste, wenn Sie die unten stehenden Items gründlich auswendig gelernt haben.\n\n' + target_innocent_list)
+        if rounds == 1:
+            if condition in [4]:
+                show_instruction(text_warning_cit)
+            show_instruction('Drücken Sie die Leertaste, wenn Sie die unten stehenden Items gründlich auswendig gelernt haben.\n\n' + target_innocent_list)
+        elif rounds == 2: 
+            if condition in [4]:
+                show_instruction('Beachten Sie erneut:\n\n' + text_warning_cit)
+            show_instruction('Es folgt nun die zweite Runde.\n\n Drücken Sie die Leertaste, wenn Sie die unten stehenden Items gründlich auswendig gelernt haben.\n\n' + target_innocent_list)
+        elif rounds == 3:
+            show_instruction('Es folgt die letzte Runde des Abfragetests. Lernen Sie unten stehenden Items gründlich auswendig, drücken Sie Leertaste, um fortzufahren. \n\n' + target_innocent_list)
     combine_shuffle = list(zip(required_items, dummy_list_numbers))
     shuffle(combine_shuffle)
     required_items[:], dummy_list_numbers[:] = zip(*combine_shuffle)
@@ -265,13 +279,32 @@ def target_check_one():
 def target_check_two():
     global condition, required, typedin, rounds
     required_items = []
-    show_instruction('Im Folgenden wird Ihnen erneut eine Liste an Items präsentiert, die Sie danach wiedergeben müssen' + move_on)
+    if rounds == 4:
+        show_instruction('Im Folgenden wird Ihnen eine weitere Liste an Items präsentiert, die Sie danach wiedergeben müssen. \n\nDrücken Sie die Leertaste, um fortzufahren.')
     if condition in [1,2,5,6]:
         required_items = targets_innocent
-        show_instruction('Drücken Sie die Leertaste, wenn Sie die unten stehenden Items gründlich auswendig gelernt haben.\n\n' + target_innocent_list)
+        if rounds == 4:
+            if condition in [2]:
+                show_instruction(text_warning_cit)
+            show_instruction('Drücken Sie die Leertaste, wenn Sie die unten stehenden Items gründlich auswendig gelernt haben.\n\n' + target_innocent_list)
+        elif rounds == 5: 
+            if condition in [2]:
+                show_instruction('Beachten Sie erneut:\n\n' + text_warning_cit)
+            show_instruction('Es folgt nun die zweite Runde.\n\n Drücken Sie die Leertaste, wenn Sie die unten stehenden Items gründlich auswendig gelernt haben.\n\n' + target_innocent_list)
+        elif rounds == 6:
+            show_instruction('Es folgt die letzte Runde des Abfragetests. Lernen Sie unten stehenden Items gründlich auswendig, drücken Sie Leertaste, um fortzufahren. \n\n' + target_innocent_list)
     else:
         required_items = targets_guilty
-        show_instruction('Drücken Sie die Leertaste, wenn Sie die unten stehenden Items gründlich auswendig gelernt haben.\n\n' + target_guilty_list)
+        if rounds == 4:
+            if condition in [3]:
+                show_instruction(text_warning_cit)
+            show_instruction('Drücken Sie die Leertaste, wenn Sie die unten stehenden Items gründlich auswendig gelernt haben.\n\n' + target_guilty_list)
+        elif rounds == 5: 
+            if condition in [3]:
+                show_instruction('Beachten Sie erneut:\n\n' + text_warning_cit)
+            show_instruction('Es folgt nun die zweite Runde.\n\n Drücken Sie die Leertaste, wenn Sie die unten stehenden Items gründlich auswendig gelernt haben.\n\n' + target_guilty_list)
+        elif rounds == 6:
+            show_instruction('Es folgt die letzte Runde des Abfragetests. Lernen Sie unten stehenden Items gründlich auswendig, drücken Sie Leertaste, um fortzufahren. \n\n' + target_guilty_list)
     combine_shuffle = list(zip(required_items, dummy_list_numbers))
     shuffle(combine_shuffle)
     required_items[:], dummy_list_numbers[:] = zip(*combine_shuffle)
@@ -349,14 +382,14 @@ def basic_variables():
     stopwatch = Clock()
     guilt = 1 # always guilty
      ## CONDITIONS:
-        # 1       probes 1 + exp + guilty first
-        # 2       probes 2 + exp + guilty first
-        # 3       probes 1 + exp + inno first
-        # 4       probes 2 + exp + inno first 
-        # 5       probes 1 + control + guilty first 
-        # 6       probes 2 + control + guilty first 
-        # 7       probes 1 + control + inno first
-        # 8       probes 2 + control + inno first
+        # 1       probes 1 + exp + crime first
+        # 2       probes 2 + exp + nocrime first
+        # 3       probes 1 + exp + nocrime first
+        # 4       probes 2 + exp + crime first 
+        # 5       probes 1 + control + crime first 
+        # 6       probes 2 + control + no crime first 
+        # 7       probes 1 + control + no crime first
+        # 8       probes 2 + control + crime first first
     block_num = 0
     all_main_rts = { 'probe' : [], 'irrelevant': [] }
     practice_repeated = { 'block1' : 0, 'block2': 0, 'block3': 0}
@@ -415,37 +448,38 @@ def next_block():
     global ddline, block_num, rt_data_dict, crrnt_instr, blck_itms, firsttime, crrnt_phase, condition
     block_num += 1
     if block_num == 1:
+        target_check_one()
+        target_check_one()
+        target_check_one()
         crrnt_phase = 'practice'
-        practiceitems = create_items(['Blaue Jacke'], ['Grüner Hut'], ['Braune Schuhe' , 'Roter Schal', 'Graue Hose', 'Schwarze Handschuhe'], 1)
+        if condition in [1,2,5,6]:
+            practiceitems = create_items(['Blaue Jacke'], ['Grüner Hut'], ['Braune Schuhe' , 'Roter Schal', 'Graue Hose', 'Schwarze Handschuhe'], 1)
+        else:
+            practiceitems = create_items(['Weißes Shirt'], ['Grüne Krawatte'], ['Beiger Anzug', 'Rote Weste', 'Hellbrauner Gürtel', 'Schwarze Socken'], 1)
         blck_itms = practiceitems
         rt_data_dict = {}
         assign_keys()
         ddline = 10
-        #block_num += 1
     elif block_num == 2:
         crrnt_phase = 'main'
-        if condition in [1, 4, 5, 8]:
+        if condition in [1, 2, 5, 6]:
             block1_items = create_items(probes_guilty, targets_guilty, irrelevants_guilty, 3)
-            target_check_one()
-            target_check_one()
-            target_check_one()
-        elif condition in [2, 3, 6, 7]:
+        elif condition in [3, 4, 7, 8]:
             block1_items = create_items(probes_innocent, targets_innocent, irrelevants_innocent, 3)
-            target_check_one()
         blck_itms = block1_items
-        ddline = main_ddline
-        #block_num += 1    
+        ddline = main_ddline  
     elif block_num == 3:
         crrnt_phase = 'main'
-        if condition in [1, 4, 5, 8]:
+        if condition in [1, 2, 5, 6]:
             block2_items = create_items(probes_innocent, targets_innocent, irrelevants_innocent, 3)
             target_check_two()
             target_check_two()
             target_check_two()
-        elif condition in [2, 3, 6, 7]:
+        elif condition in [3, 4, 7, 8]:
             block2_items = create_items(probes_guilty, targets_guilty, irrelevants_guilty, 3)
             target_check_two()
-        #block_num += 1
+            target_check_two()
+            target_check_two()
         blck_itms = block2_items
         ddline = main_ddline
     if testing == True:
@@ -463,16 +497,19 @@ def show_instruction(instruction_text):
     end_on_esc(inst_resp[0])
 
 def show_block_instr():
+    global condition, training_target
+    if condition in [3,4,7,8]:
+        training_target = 'Grüne Krawatte'
     if block_num == 1:
-        instruction_page.setText( 'Training Block ? With Instructions? \nfor now six items (probe, target, 4xirr)  \n\nDrücken Sie die rechte Taste für GRÜNER HUT und die linke Taste für alle anderen Wortpaare. \n' + key_pair['always']['descr'] )
-    elif block_num == 2 and condition in [1, 2, 3, 4]: 
-        instruction_page.setText( 'Block 1 \nDrücke Sie die rechte Taste für die von Ihnen soeben wiedergegebenen Wortpaare, für alle anderen die linke Taste.  \n' + key_pair['always']['descr'] + text_warning_cit)
-    elif block_num == 2 and condition in [5, 6, 7, 8]:
+        instruction_page.setText( 'Nun folgt ein Test zu der Liste mit Wortkombinationen, die Sie gerade gelernt haben. Sie werden verschiedene Wortkombinationen sehen, die nacheinander auf dem Monitor gezeigt werden. Bei jeder dieser Kombinationen sollen Sie so schnell wie möglich angeben, ob diese in der gelernten Liste enthalten war oder nicht. War die Wortkombination in der zuvor gelernten Liste enthalten, drücken Sie „J“ (JA). Wird eine andere Wortkombination gezeigt, so drücken Sie „F“ (NEIN). Verwenden Sie dazu Ihre beiden Zeigefinger und positionieren sie direkt über den Tasten, damit Sie so schnell und akkurat wie möglich reagieren können. \n\nDrücken Sie im Folgenden Probebeispiel die rechte Taste für' + training_target + ' und die linke Taste für alle anderen Wortpaare. \n' + key_pair['always']['descr'] )
+    elif block_num == 2 and condition in [1, 2]: 
+        instruction_page.setText( 'Block 1 \nDrücke Sie die rechte Taste für die von Ihnen soeben wiedergegebenen Wortpaare, für alle anderen die linke Taste.  \n' + key_pair['always']['descr'] + '\n' + text_warning_cit2)
+    elif block_num == 2 and condition in [3, 4, 5, 6, 7, 8]:
         instruction_page.setText( 'Block 1 \nDrücke Sie die rechte Taste für die von Ihnen soeben wiedergegebenen Wortpaare, für alle anderen die linke Taste.  \n' + key_pair['always']['descr'])
-    elif block_num == 3 and condition in [1, 2, 3, 4]: 
-        instruction_page.setText('Block 2'+ text_warning_cit)
-    elif block_num == 3 and condition in [5, 6, 7, 8]: 
-        instruction_page.setText('Block 2')
+    elif block_num == 3 and condition in [3, 4]: 
+        instruction_page.setText('Block 2 \nEs folgt erneut ein Test zu der Liste mit Wortkombinationen, die Sie gerade gelernt haben. Drücken Sie wieder die rechte Taste (J - Ja) für die von Ihnen so eben wiedergegebenen Wortpaare und die linke Taste (F - Nein) für alle anderen WOrtpaare. Seien Sie so schnell und genau wie möglich.\n'+ text_warning_cit)
+    elif block_num == 3 and condition in [1, 2, 5, 6, 7, 8]: 
+        instruction_page.setText('Block 2 \nEs folgt erneut ein Test zu der Liste mit Wortkombinationen, die Sie gerade gelernt haben. Drücken Sie wieder die rechte Taste (J - Ja) für die von Ihnen so eben wiedergegebenen Wortpaare und die linke Taste (F - Nein) für alle anderen WOrtpaare. Seien Sie so schnell und genau wie möglich.\n'+ text_warning_cit)
     instruction_page.draw()
     win.flip()
     wait(instr_wait)
@@ -480,7 +517,7 @@ def show_block_instr():
     inst_resp = waitKeys( keyList = [ 'space', escape_key ] + show_again )
     end_on_esc( inst_resp[0] )
     if inst_resp[0] in show_again:
-        show_instruction( task_instructions() + '\n\nUm weiterzugehen, drücken Sie die Leertaste.' )
+        show_instruction('\n\nUm weiterzugehen, drücken Sie die Leertaste.' )
         show_block_instr()
 
 def run_block():
