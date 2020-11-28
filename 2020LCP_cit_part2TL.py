@@ -513,7 +513,7 @@ def show_block_instr():
     elif block_num == 2 and condition in [2, 3, 5, 6, 7, 8]:
         instruction_page.setText( 'Block 1 \nDrücke Sie die rechte Taste für die von Ihnen soeben wiedergegebenen Wortpaare, für alle anderen die linke Taste.  \n' + key_pair['always']['descr'])
     elif block_num == 3 and condition in [2, 3]: 
-        instruction_page.setText('Block 2 \nEs folgt erneut ein Test zu der Liste mit Wortkombinationen, die Sie gerade gelernt haben. Drücken Sie wieder die rechte Taste (J - Ja) für die von Ihnen so eben wiedergegebenen Wortpaare und die linke Taste (F - Nein) für alle anderen Wortpaare. Seien Sie so schnell und genau wie möglich.\n'+ text_warning_cit)
+        instruction_page.setText('Block 2 \nEs folgt erneut ein Test zu der Liste mit Wortkombinationen, die Sie gerade gelernt haben. Drücken Sie wieder die rechte Taste (J - Ja) für die von Ihnen so eben wiedergegebenen Wortpaare und die linke Taste (F - Nein) für alle anderen Wortpaare. Seien Sie so schnell und genau wie möglich.\n'+ text_warning_cit2)
     elif block_num == 3 and condition in [1, 4, 5, 6, 7, 8]: 
         instruction_page.setText('Block 2 \nEs folgt erneut ein Test zu der Liste mit Wortkombinationen, die Sie gerade gelernt haben. Drücken Sie wieder die rechte Taste (J - Ja) für die von Ihnen so eben wiedergegebenen Wortpaare und die linke Taste (F - Nein) für alle anderen Wortpaare. Seien Sie so schnell und genau wie möglich.\n')
     instruction_page.draw()
