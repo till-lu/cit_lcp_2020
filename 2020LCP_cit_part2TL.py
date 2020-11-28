@@ -21,8 +21,10 @@ main_ddline = 1 # sec
 isi_min_max = (500, 800)
 instruction_color = '#9999FF'
 ############ MAIN ITEMS - paste from JS
-
-
+##small things to do:
+## - ending / debriefing completely, questions necessary?
+## - block instructions
+## - how to ask for recall items
 
 
 distraction_text = "Bearbeiten Sie nun bitte die Ihnen auf einem Blatt gereichten Aufgaben. Sie haben dafür 10 Minuten Zeit. Drücken Sie anschließend die Leertaste um fortzufahren."
@@ -46,6 +48,8 @@ irrelevants_guilty = [u"Braune Schuhe", u"Roter Schal", u"Graue Hose", u"Schwarz
 irrelevants_innocent = [u"Beiger Anzug", u"Rote Weste", u"Hellbrauner Gürtel", u"Schwarze Socken", u"Ben Schmid", u"Emil Burger", u"Marc Huber", u"Jan Schreiber", u"Operation Eiche", u"Operation Birke", u"Operation Ulme", u"Operation Pinie", u"Zaunkönig Akte", u"Enten Akte", u"Krähen Akte", u"Gänse Akte", u"Zinn Pläne", u"Zink Pläne", u"Blei Pläne", u"Eisen Pläne", u"Reh Straße", u"Wolf Straße", u"Bären Straße", u"Elch Straße"]
 
 dummy_list_numbers = [0,1,2,3,4,5]
+
+dummy_list_numbers_2 = [0,1,2,3,4,5]
 
 training_target = 'Grüner Hut'
 
@@ -220,7 +224,7 @@ def target_check_one():
         elif rounds == 2: 
             if condition == 1:
                 show_instruction('Beachten Sie erneut:\n\n' + text_warning_cit)
-            show_instruction('Es folgt nun die zweite Runde.\n\n Drücken Sie die Leertaste, wenn Sie die unten stehenden Items gründlich auswendig gelernt haben.\n\n' + target_guilty_list)
+            show_instruction('Es folgt nun die zweite Runde.\n\nDrücken Sie die Leertaste, wenn Sie die unten stehenden Items gründlich auswendig gelernt haben.\n\n' + target_guilty_list)
         elif rounds == 3:
             show_instruction('Es folgt die letzte Runde des Abfragetests. Lernen Sie unten stehenden Items gründlich auswendig, drücken Sie Leertaste, um fortzufahren. \n\n' + target_guilty_list)
     else:
@@ -232,7 +236,7 @@ def target_check_one():
         elif rounds == 2: 
             if condition == 4:
                 show_instruction('Beachten Sie erneut:\n\n' + text_warning_cit)
-            show_instruction('Es folgt nun die zweite Runde.\n\n Drücken Sie die Leertaste, wenn Sie die unten stehenden Items gründlich auswendig gelernt haben.\n\n' + target_innocent_list)
+            show_instruction('Es folgt nun die zweite Runde.\n\nDrücken Sie die Leertaste, wenn Sie die unten stehenden Items gründlich auswendig gelernt haben.\n\n' + target_innocent_list)
         elif rounds == 3:
             show_instruction('Es folgt die letzte Runde des Abfragetests. Lernen Sie unten stehenden Items gründlich auswendig, drücken Sie Leertaste, um fortzufahren. \n\n' + target_innocent_list)
     combine_shuffle = list(zip(required_items, dummy_list_numbers))
@@ -241,6 +245,7 @@ def target_check_one():
     counter = 0
     while counter <= 5:
         required = required_items[counter]
+        #required_2 = ''
         cue = training_recall_item[dummy_list_numbers[counter]]
         counter += 1
         instr_display =  TextStim(win, color=instruction_color, font='Verdana', text = u'Bitte geben Sie im Folgenden die korrekte Antwort ein, drücken Sie dann ENTER.', pos=(0, 150), height=30, wrapWidth=1100, colorSpace='rgb')
@@ -277,7 +282,7 @@ def target_check_one():
 
 
 def target_check_two():
-    global condition, required, typedin, rounds, dummy_list_numbers, training_recall_item
+    global condition, required, typedin, rounds, dummy_list_numbers, training_recall_item, dummy_list_numbers_2
     required_items = []
     if rounds == 4:
         show_instruction('Im Folgenden wird Ihnen eine weitere Liste an Items präsentiert, die Sie danach wiedergeben müssen. \n\nDrücken Sie die Leertaste, um fortzufahren.')
@@ -305,13 +310,14 @@ def target_check_two():
             show_instruction('Es folgt nun die zweite Runde.\n\n Drücken Sie die Leertaste, wenn Sie die unten stehenden Items gründlich auswendig gelernt haben.\n\n' + target_guilty_list)
         elif rounds == 6:
             show_instruction('Es folgt die letzte Runde des Abfragetests. Lernen Sie unten stehenden Items gründlich auswendig, drücken Sie Leertaste, um fortzufahren. \n\n' + target_guilty_list)
-    combine_shuffle = list(zip(required_items, dummy_list_numbers))
+    combine_shuffle = list(zip(required_items, dummy_list_numbers_2))
     shuffle(combine_shuffle)
-    required_items[:], dummy_list_numbers[:] = zip(*combine_shuffle)
+    required_items[:], dummy_list_numbers_2[:] = zip(*combine_shuffle)
     counter = 0
     while counter <= 5:
+        #required_2 = ''
         required = required_items[counter]
-        cue = training_recall_item[dummy_list_numbers[counter]]
+        cue = training_recall_item[dummy_list_numbers_2[counter]]
         counter += 1
         instr_display =  TextStim(win, color=instruction_color, font='Verdana', text = u'Bitte geben Sie im Folgenden die korrekte Antwort ein, drücken Sie dann ENTER.', pos=(0, 150), height=30, wrapWidth=1100, colorSpace='rgb')
         input_prompt =  TextStim(win, color=instruction_color, font='Verdana', text = 'Geben Sie ' + cue + ' ein:', pos=(-100, 0), alignHoriz = 'right', height=35)
@@ -501,15 +507,15 @@ def show_block_instr():
     if condition in [3,4,7,8]:
         training_target = 'Grüne Krawatte'
     if block_num == 1:
-        instruction_page.setText( 'Nun folgt ein Test zu der Liste mit Wortkombinationen, die Sie gerade gelernt haben. Sie werden verschiedene Wortkombinationen sehen, die nacheinander auf dem Monitor gezeigt werden. Bei jeder dieser Kombinationen sollen Sie so schnell wie möglich angeben, ob diese in der gelernten Liste enthalten war oder nicht. War die Wortkombination in der zuvor gelernten Liste enthalten, drücken Sie „J“ (JA). Wird eine andere Wortkombination gezeigt, so drücken Sie „F“ (NEIN). Verwenden Sie dazu Ihre beiden Zeigefinger und positionieren sie direkt über den Tasten, damit Sie so schnell und akkurat wie möglich reagieren können. \n\nDrücken Sie im Folgenden Probebeispiel die rechte Taste für' + training_target + ' und die linke Taste für alle anderen Wortpaare. \n' + key_pair['always']['descr'] )
+        instruction_page.setText( 'Nun folgt ein Test zu der Liste mit Wortkombinationen, die Sie gerade gelernt haben. Sie werden verschiedene Wortkombinationen sehen, die nacheinander auf dem Monitor gezeigt werden. Bei jeder dieser Kombinationen sollen Sie so schnell wie möglich angeben, ob diese in der gelernten Liste enthalten war oder nicht. War die Wortkombination in der zuvor gelernten Liste enthalten, drücken Sie „J“ (JA). Wird eine andere Wortkombination gezeigt, so drücken Sie „F“ (NEIN). Verwenden Sie dazu Ihre beiden Zeigefinger und positionieren sie direkt über den Tasten, damit Sie so schnell und akkurat wie möglich reagieren können. \n\nDrücken Sie im Folgenden Probebeispiel die rechte Taste für "' + training_target + '" und die linke Taste für alle anderen Wortpaare. \n' + key_pair['always']['descr'] )
     elif block_num == 2 and condition in [1, 4]: 
         instruction_page.setText( 'Block 1 \nDrücke Sie die rechte Taste für die von Ihnen soeben wiedergegebenen Wortpaare, für alle anderen die linke Taste.  \n' + key_pair['always']['descr'] + '\n' + text_warning_cit2)
     elif block_num == 2 and condition in [2, 3, 5, 6, 7, 8]:
         instruction_page.setText( 'Block 1 \nDrücke Sie die rechte Taste für die von Ihnen soeben wiedergegebenen Wortpaare, für alle anderen die linke Taste.  \n' + key_pair['always']['descr'])
     elif block_num == 3 and condition in [2, 3]: 
-        instruction_page.setText('Block 2 \nEs folgt erneut ein Test zu der Liste mit Wortkombinationen, die Sie gerade gelernt haben. Drücken Sie wieder die rechte Taste (J - Ja) für die von Ihnen so eben wiedergegebenen Wortpaare und die linke Taste (F - Nein) für alle anderen WOrtpaare. Seien Sie so schnell und genau wie möglich.\n'+ text_warning_cit)
+        instruction_page.setText('Block 2 \nEs folgt erneut ein Test zu der Liste mit Wortkombinationen, die Sie gerade gelernt haben. Drücken Sie wieder die rechte Taste (J - Ja) für die von Ihnen so eben wiedergegebenen Wortpaare und die linke Taste (F - Nein) für alle anderen Wortpaare. Seien Sie so schnell und genau wie möglich.\n'+ text_warning_cit)
     elif block_num == 3 and condition in [1, 4, 5, 6, 7, 8]: 
-        instruction_page.setText('Block 2 \nEs folgt erneut ein Test zu der Liste mit Wortkombinationen, die Sie gerade gelernt haben. Drücken Sie wieder die rechte Taste (J - Ja) für die von Ihnen so eben wiedergegebenen Wortpaare und die linke Taste (F - Nein) für alle anderen WOrtpaare. Seien Sie so schnell und genau wie möglich.\n')
+        instruction_page.setText('Block 2 \nEs folgt erneut ein Test zu der Liste mit Wortkombinationen, die Sie gerade gelernt haben. Drücken Sie wieder die rechte Taste (J - Ja) für die von Ihnen so eben wiedergegebenen Wortpaare und die linke Taste (F - Nein) für alle anderen Wortpaare. Seien Sie so schnell und genau wie möglich.\n')
     instruction_page.draw()
     win.flip()
     wait(instr_wait)
