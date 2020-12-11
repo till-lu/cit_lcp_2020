@@ -18,7 +18,7 @@ import random
 testing = True # True for testing, False for real recording
 ###
 main_ddline = 1 # sec
-isi_min_max = (500, 800)
+isi_set = (500, 800, 1100)
 instruction_color = '#111111'
 ############ MAIN ITEMS - paste from JS
 ##small things to do:
@@ -416,7 +416,7 @@ def str_if_num( num_val ):
 
 def add_resp():
     global incorrect, tooslow
-    data_out.write( '\t'.join( [ subj_id, str(condition), crrnt_phase, str(block_num), str(trial_num+1), stim_text, stim_current["item_type"], stim_type, resp_key, str_if_num(rt_start), str(incorrect), str(tooslow), str_if_num(press_dur), str_if_num( isi_min_max[0]/1000 + isi_delay ), str(strftime("%Y%m%d%H%M%S", gmtime())), str(guilt) ] ) + '\n' )
+    data_out.write( '\t'.join( [ subj_id, str(condition), crrnt_phase, str(block_num), str(trial_num+1), stim_text, stim_current["item_type"], stim_type, resp_key, str_if_num(rt_start), str(incorrect), str(tooslow), str_if_num(press_dur), str_if_num( isi_set[0]/1000 + isi_delay ), str(strftime("%Y%m%d%H%M%S", gmtime())), str(guilt) ] ) + '\n' )
     print("resp key:", resp_key, "for stim:", stim_text, "incorrect:", incorrect, "rt_start:", rt_start)
 
 
@@ -435,7 +435,7 @@ def start_with_space():
     end_on_esc(inst_resp[0])
     draw_labels()
     win.flip()
-    wait(isi_min_max[0]/1000)
+    wait(isi_set[0]/1000)
 
 def draw_labels():
     if block_num <= 2:
@@ -531,7 +531,7 @@ def run_block():
         tooslow = 0
         stim_type = stim_current['item_type']
         stim_text = stim_current["word"]
-        isi_delay = randint(1, isi_min_max[1]-isi_min_max[0]) / 1000
+        isi_delay = (choice(isi_set) - isi_set[0]) / 1000
         wait(isi_delay) # wait ISI
         center_disp.setText(stim_text.upper())
         draw_labels()
@@ -564,7 +564,7 @@ def run_block():
                     incorrect += 1
         draw_labels()
         win.flip()
-        wait(isi_min_max[0]/1000)
+        wait(isi_set[0]/1000)
         press_dur = '-' # remains this if none found, or not with correct key
         for ke in kb_device.getReleases(): # get io keypress events for duration
             try:
