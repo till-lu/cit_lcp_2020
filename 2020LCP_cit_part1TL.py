@@ -18,7 +18,7 @@ import random
 testing = True # True for testing, False for real recording
 ###
 main_ddline = 1 # sec
-isi_min_max = (500, 800)
+isi_set = (500, 800, 1100)
 instruction_color = '#111111' #formerly = #9999FF
 ############ MAIN ITEMS - paste from JS
 
@@ -265,7 +265,7 @@ def start_with_space():
     end_on_esc(inst_resp[0])
     draw_labels()
     win.flip()
-    wait(isi_min_max[0]/1000)
+    wait(isi_set[0]/1000)
 
 
 def show_instruction(instruction_text):
