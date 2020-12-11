@@ -19,20 +19,18 @@ testing = True # True for testing, False for real recording
 ###
 main_ddline = 1 # sec
 isi_min_max = (500, 800)
-instruction_color = 'black' #formerly = #9999FF
+instruction_color = '#111111' #formerly = #9999FF
 ############ MAIN ITEMS - paste from JS
 
 
-probe_crime_text_1 = "Geben Sie sich als Person mit dem Namen Tim Koch aus und senden Sie eine Nachricht via E-Mail an die Person mit dem Decknamen 'Blaue Jacke'.\nIn dieser Nachricht schreiben Sie 'Blaue Jacke' es gehe um die Operation Kuh und bitten darum, die Regen Akte mit den U-Boot Plänen zur Hai Straße zu bringen.\n\n Leertaste drücken um fortzufahren."
-probe_crime_text_2 = "Geben Sie sich als Person mit dem Namen Paul Nowak aus und senden Sie eine Nachricht via E-Mail an die Person mit dem Decknamen 'Weißes Shirt'.\nIn dieser Nachricht schreiben Sie 'Weißes Shirt' es gehe um die Operation Fichte und bitten darum, die Eulen Akte mit den Messing Plänen zur Löwen Straße zu bringen.\n\n Leertaste drücken um fortzufahren."
-probe_crime_list_1 = ' Username : Tim Koch\n\n Deckname : Blaue Jacke\n\n Operation : Operation Kuh\n\n Akte : Regen Akte\n\n Pläne : U Boot Pläne\n\n Ort : Hai Strasse'
-probe_crime_list_2 = ' Username : Paul Nowak\n\n Deckname : Weißes Shirt\n\n Operation : Operation Fichte\n\n Akte : Eulen Akte\n\n Pläne : Messing Pläne\n\n Ort : Löwen Strasse'
+probe_crime_list_1 = ' Ausgeben als : Tim Koch\n\n Nachricht an Deckname : Blaue Jacke\n\n Aktion : Operation Kuh\n\n Objekt : Regen Akte\n\n Inhalt des Objektes : Helikopter Pläne\n\n Adresse : Hai Straße'
+probe_crime_list_2 = ' Ausgeben als : Paul Nowak\n\n Nachricht an Deckname : Weißes Shirt\n\n Aktion : Operation Fichte\n\n Objekt : Eulen Akte\n\n Inhalt des Objektes : Messing Pläne\n\n Adresse : Löwen Straße'
 
-crime_list_1 = ["Tim Koch", "Blaue Jacke", "Operation Kuh",  "Regen Akte", "U-Boot Pläne", "Hai-Straße"]
-crime_list_2 = ["Paul Nowak", "Weißes Shirt","Operation Fichte","Eulen Akte","Messing Pläne","Löwen Strasse"]
+crime_list_1 = ["Tim Koch", "Blaue Jacke", "Operation Kuh",  "Regen Akte", "Helikopter Pläne", "Hai Straße"]
+crime_list_2 = ["Paul Nowak", "Weißes Shirt","Operation Fichte","Eulen Akte","Messing Pläne","Löwen Straße"]
 dummy_list_numbers = [0, 1, 2, 3, 4, 5]
 
-training_recall_item = {0 : 'Username', 1 : 'Deckname', 2 : 'Operation', 3 : 'Akte', 4 : 'Pläne', 5 : 'Ort'}
+training_recall_item = {0 : 'Ausgeben als', 1 : 'Nachricht an Deckname', 2 : 'Aktion', 3 : 'Objekt', 4 : 'Inhalt des Objektes', 5 : 'Adresse'}
 
 rounds = 1
 
@@ -81,45 +79,35 @@ def consent_instructions():
 
 def which_round_indicator():
     global condition
-    if condition % 2 != 0:
-        probe_crime_text = probe_crime_text_1
-    else:
-        probe_crime_text = probe_crime_text_2
     if rounds == 1:
-        show_instruction("Es folgt nun die erste Runde, in der die soeben gezeigten Wortpaare abgefragt werden.\nLeertaste drücken, um fortzufahren.")
+        show_instruction("Es folgt nun die erste Runde, in der die soeben gezeigten Wortpaare abgefragt werden. Geben Sie diese exakt so, wie sie Ihnen eben gezeigt wurden, ein. \nLeertaste drücken, um fortzufahren.")
     elif rounds == 2:
         show_instruction("Es folgen erneut alle Informationen, die Sie benötigen, wenn Sie sich als Komplize ausgeben. Damit diese Täuschung funktioniert, ist es sehr wichtig, dass jedes Detail der Nachricht korrekt ist. Bitte prägen Sie sich deshalb erneut alle Informationen ein. \nLeertaste drücken, um fortzufahren.")
-    elif rounds == 3: 
+    elif rounds == 3:
         show_instruction("Es folgt nun eine dritte und letzte Runde. Die Wortpaare werden noch einmal gezeigt, bevor diese ein letztes Mal abgefragt werden.\nLeertaste drücken, um fortzufahren.")
 
 
 
 
-def crime_text():
-    show_instruction(probe_crime_text)
+
 
 def training_instruction():
     global condition
     if condition % 2 != 0:
-        probe_crime_text = probe_crime_text_1
         probe_crime_list = probe_crime_list_1
     else:
-        probe_crime_text = probe_crime_text_2
         probe_crime_list = probe_crime_list_2
-    show_instruction('Sie sollen eine fiktive Person kontaktieren, die unter Verdacht steht, kriminelle Aktivitäten begangen zu haben. Schreiben Sie dieser Person eine E-Mail, in der Sie um eine Übergabe illegal erlangter Dokumente bitten. Geben Sie sich als einer der anderen Komplizen aus und loggen sich in dessen Mail-Account ein. In der Nachricht bitten Sie den Verdächtigten, dass er Sie an einem bestimmten Ort trifft und die entsprechenden Dokumente bei sich hat. Die Informationen, die Sie für diese Aufgabe benötigen werden, werden Ihnen gleich präsentiert.\n\n Drücken Sie die Leertaste um fortzufahren.') 
-    show_instruction('Drücken Sie die Leertaste, wenn Sie die unten stehenden Items gründlich auswendig gelernt haben. Im Folgenden werden diese in drei Runden abgefragt.\n\n' +  probe_crime_list)
+    show_instruction('Sie sollen eine Person kontaktieren, die unter Verdacht steht, kriminelle Aktivitäten begangen zu haben. Schreiben Sie dieser Person eine E-Mail, in der Sie um die Übergabe illegal erlangter Dokumente bitten. Dazu geben Sie sich als einer der Komplizen der Person aus und loggen sich in den Mail-Account dieses Komplizen ein. In der Nachricht bitten Sie den Verdächtigen, dass er Sie an einem bestimmten Ort trifft und die entsprechenden Dokumente bei sich hat. Die Informationen, die Sie für diese Aufgabe benötigen werden, werden Ihnen gleich präsentiert.\n\n Drücken Sie die Leertaste um fortzufahren.')
+    show_instruction('Für das Verfassen der E-Mail werden Sie die folgenden Informationen brauchen. Sie loggen sich in den Uni Wien Webmail Account des Komplizen ein und senden dann eine Nachricht an den Decknamen der anderen verdächtigen Person. Sie erklären dieser Person, dass es um eine bestimmte Aktion geht und bitten die Person, Sie an einer bestimmten Adresse zu treffen und zu diesem Treffen das genannte Objekt mit dem sich darin befindenden Inhalt mitzubringen. Drücken Sie daher erst die Leertaste, wenn Sie die unten stehenden Wortpaare, die für das Verfassen der Nachricht benötigt werden, gründlich auswendig gelernt haben. Im Folgenden werden diese in drei Runden abgefragt.\n\n' +  probe_crime_list)
 
 def training_list():
     global condition
     if condition % 2 != 0:
         probe_crime_list = probe_crime_list_1
-        probe_crime_text = probe_crime_text_1
     else:
         probe_crime_list = probe_crime_list_2
-        probe_crime_text = probe_crime_text_2
-    show_instruction('Drücken Sie die Leertaste, wenn Sie die unten stehenden Items gründlich auswendig gelernt haben.\n\n' +  probe_crime_list)
-    if rounds == 2 or rounds == 3:
-        show_instruction("Wenn Sie sich als Komplize ausgeben, werden Sie die Items in folgender Weise benötigen:\n\n" + probe_crime_text)
+    show_instruction('Drücken Sie die Leertaste, wenn Sie die unten stehenden Items gründlich auswendig gelernt haben.\nSie loggen sich in den Uni Wien Webmail Account des Komplizen ein und senden dann eine Nachricht an den Decknamen der anderen verdächtigen Person. Sie erklären dieser Person, dass es um eine bestimmte Aktion geht und bitten die Person, Sie an einer bestimmten Adresse zu treffen und zu diesem Treffen das genannte Objekt mit dem sich darin befindenden Inhalt mitzubringen.\n\n' +  probe_crime_list)
+
 
 def training_software():
     global condition, required, typedin, rounds
@@ -136,8 +124,8 @@ def training_software():
         required = required_items[counter]
         cue = training_recall_item[dummy_list_numbers[counter]]
         counter += 1
-        instr_display =  TextStim(win, color=instruction_color, font='Helvetica', text = u'Bitte geben Sie im Folgenden die korrekte Antwort ein, drücken Sie dann ENTER.', pos=(0, 150), height=30, wrapWidth=1100, colorSpace='rgb')
-        input_prompt =  TextStim(win, color=instruction_color, font='Helvetica', text = 'Geben Sie ' + cue + ' ein:', pos=(-100, 0), alignHoriz = 'right', height=35)
+        instr_display =  TextStim(win, color=instruction_color, font='Helvetica', text = u'Bitte geben Sie im Folgenden das korrekte, zuvor auswendig gelernte Wortpaar ein, drücken Sie dann ENTER.', pos=(0, 150), height=30, wrapWidth=1100, colorSpace='rgb')
+        input_prompt =  TextStim(win, color=instruction_color, font='Helvetica', text = cue + ':', pos=(-100, 0), alignHoriz = 'right', height=35)
         input_display =  TextStim(win, color='black', pos=(-100, -4), alignHoriz = 'left', height=35, bold = True, colorSpace='rgb')
         typedin = ''
         while True:
@@ -172,16 +160,16 @@ def training_software():
 
 
 def final_slide():
-    show_instruction("Sie haben nun alle relevanten Informationen gelernt. Bitte führen Sie die Aufgabe nun aus, indem Sie sich im entsprechenden Account einloggen und die Nachricht senden. Wenden Sie sich dazu bitte an die Versuchsleitung.")
+    show_instruction("Sie haben nun alle relevanten Informationen gelernt. Bitte führen Sie die Aufgabe nun aus, indem Sie im Google Chrome Browser auf webmail.univie.ac.at gehen und sich dort mit dem eingespeicherten user:account einloggen und die Nachricht mit den gelernten Informationen verfassen und senden. Wenden Sie sich bitte an die Versuchsleitung, um zum Desktop zu gelangen und führen Sie die Aufgabe dann eigenständig aus. Sollten Sie weitere Fragen haben, wenden Sie sich bitte ebenfalls an die Versuchsleitung.")
     waitKeys(keyList = ['b'])
 
 def set_screen(): # screen properties
     global win, start_text, left_label, right_label, center_disp, instruction_page
-    win = Window([1280, 1000], color='White', fullscr = 1, units = 'pix', allowGUI = True) # 1280 1024
+    win = Window([1280, 1000], color='#dddddd', fullscr = 1, units = 'pix', allowGUI = True) # 1280 1024
     start_text = TextStim(win, color=instruction_color, font='Helvetica', text = u'Um anzufangen, bitte die Leertaste drücken.', pos = [0,-300], height=35, bold = True, wrapWidth= 1100)
-    left_label = TextStim(win, color='black', font='Verdana', text = 'unvertraut', pos = [-350,-160], height=35, alignHoriz='center')
-    right_label = TextStim(win, color='black', font='Verdana', text = 'vertraut', pos = [350,-160], height=35, alignHoriz='center')
-    center_disp = TextStim(win, color='black', font='Arial', text = '', height = 60)
+    left_label = TextStim(win, color='#111111', font='Verdana', text = 'unvertraut', pos = [-350,-160], height=35, alignHoriz='center')
+    right_label = TextStim(win, color='#111111', font='Verdana', text = 'vertraut', pos = [350,-160], height=35, alignHoriz='center')
+    center_disp = TextStim(win, color='#111111', font='Arial', text = '', height = 60)
     instruction_page = TextStim(win, wrapWidth = 1200, height = 28, font='Helvetica', color = instruction_color)
 
 
@@ -193,7 +181,7 @@ def start_input():
     input_box.addField(label=u'VP', tip = 'Ziffern')
     input_box.addText(text=u'')
     input_box.addText(text=u'Bitte ausfüllen:')
-    input_box.addField(label=u'Geschlecht', initial = '', choices=[u'männlich',u'weiblich'] )
+    input_box.addField(label=u'Geschlecht', initial = '', choices=[u'männlich',u'weiblich', u'divers'] )
     input_box.addField(label=u'Alter', tip = 'Ziffern')
     input_box.addText(text=u'')
     input_box.show()
@@ -210,13 +198,13 @@ def start_input():
         # 1       probes 1 + exp + crime first
         # 2       probes 2 + exp + nocrime first
         # 3       probes 1 + exp + nocrime first
-        # 4       probes 2 + exp + crime first 
-        # 5       probes 1 + control + crime first 
-        # 6       probes 2 + control + no crime first 
+        # 4       probes 2 + exp + crime first
+        # 5       probes 1 + control + crime first
+        # 6       probes 2 + control + no crime first
         # 7       probes 1 + control + no crime first
         # 8       probes 2 + control + crime first first
         # check if variables correctly given
-        if condition not in range(1,8): 
+        if condition not in range(1,8):
             if testing:
                 condition = 1 # set value for testing to skip Dlg input box
                 print("condition was not set, now set to " + str(condition) + " for testing.")
@@ -247,9 +235,11 @@ def start_input():
         subj_id = str(subj_num).zfill(2) + "_" + str(strftime("%Y%m%d%H%M%S", gmtime()))
         if input_box.data[2] == 'weiblich':
             gender = 2
-        else:
+        elif input_box.data[2] == 'männlich':
             gender = 1
-        dems = 'dems/gender/age//drtn/dcit' + '\t' + str(gender) + '/' + str(age)  + '/' 
+        else:
+            gender = 3
+        dems = 'dems/gender/age//drtn/dcit' + '\t' + str(gender) + '/' + str(age)  + '/'
         start_date = datetime.now()
     else:
         quit()
