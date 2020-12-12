@@ -602,7 +602,7 @@ def show_tooslow():
     center_disp.draw()
     draw_labels()
     win.flip()
-    wait(0.5)
+    wait(1)
     center_disp.color = 'white'
 
 
