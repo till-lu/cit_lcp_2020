@@ -405,7 +405,7 @@ def create_file():
     global data_out
     f_name = 'exp_lcp_cit_maintask' + str(condition) + "_" + "_" + str(guilt) + "_ord" + "_" + subj_id + '.txt'
     data_out=open(f_name, 'a', encoding='utf-8')
-    data_out.write( '\t'.join( [ "subject_id", "condition", "phase", "block_number", "trial_number", "stimulus_shown",  "stim_type", "response_key", "rt_start", "incorrect", "too_slow", "press_duration", "isi", "date_in_ms" ] ) + "\n" )
+    data_out.write( '\t'.join( [ "subject_id", "condition", "phase", "block_number", "trial_number", "stimulus_shown",  "stim_type", "response_key", "rt_start", "incorrect", "too_slow", "press_duration", "isi", "date_in_ms", "guilt" ] ) + "\n" )
     print("File created:", f_name)
 
 def str_if_num( num_val ):
