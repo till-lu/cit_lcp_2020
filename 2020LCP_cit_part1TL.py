@@ -15,7 +15,7 @@ from datetime import datetime
 from itertools import permutations
 import random
 ## for testing
-testing = True # True for testing, False for real recording
+testing = False # True for testing, False for real recording
 ###
 main_ddline = 1 # sec
 isi_set = (500, 800, 1100)

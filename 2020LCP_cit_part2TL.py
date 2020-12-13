@@ -15,7 +15,7 @@ from datetime import datetime
 from itertools import permutations
 import random
 ## for testing
-testing = True # True for testing, False for real recording
+testing = False # True for testing, False for real recording
 ###
 main_ddline = 1 # sec
 isi_set = (500, 800, 1100)
@@ -92,9 +92,9 @@ def distraction_task():
 
 def cm_warning():
     global win, start_text, left_label, right_label, center_disp, instruction_page, instruction_color
-    show_instruction("Jetzt geht es um Ihre Merkfähigkeit. Sie werden erneut Wortpaare auswendig lernen und diese in drei Runden wiedergeben. Darauf folgt ein Test, in dem Ihnen Wortpaare gezeigt werden. In diesem Test sollen Sie auf die nun gleich gezeigten und anschließend von Ihnen gelernten Wortpaare mit einer anderen Taste reagieren als auf alle anderen gezeigten Wortpaare.")
+    show_instruction("Jetzt geht es um Ihre Merkfähigkeit. Sie werden erneut Wortpaare auswendig lernen und diese in drei Runden wiedergeben. Darauf folgt ein Test, in dem Ihnen Wortpaare gezeigt werden. In diesem Test sollen Sie auf die nun gleich gezeigten und anschließend von Ihnen gelernten Wortpaare mit einer anderen Taste reagieren als auf alle anderen gezeigten Wortpaare. \n\nUm weiterzugehen, drücken Sie die Leertaste.")
     if condition in [1, 2, 3, 4]:
-        show_instruction(text_warning_cit)
+        cit_warning_text()
     instruction_color = '#9999FF'
     win = Window([1280, 1000], color='Black', fullscr = 1, units = 'pix', allowGUI = True) # 1280 1024
     start_text = TextStim(win, color=instruction_color, font='Verdana', text = u'Um anzufangen, bitte die Leertaste drücken.', pos = [0,-300], height=35, bold = True, wrapWidth= 1100)
