@@ -127,14 +127,7 @@ def ending():
 
     info = 'Danke für die Teilnahme. Wenn Sie möchten, können Sie gehen, aber bitte seien Sie leise dabei.\n\nKurze Information über den Test:\n\nIn dieser Studie versuchen wir, die Details aus der zu Beginn verfassten E-Mail von anderen Items zu unterscheiden. Ziel des Tests ist es, anhand von Reaktionszeiten herauszufinden, wenn eine Person versucht, Wissen über bestimmte Items zu verschleiern bzw. zu verheimlichen. Dies geschieht auf Basis der Vermutung, dass Reaktionszeiten für die Items, die für die anfängliche E-Mail benötigten wurden langsamer ausfallen, als im Falle anderer Items. Hauptanliegen dieser Studie ist es, zu zeigen, ob dies auch funktioniert, wenn die Funktionsweise des Teste vorher erklärt wird.\n\nFür weitere Informationen wenden Sie sich bitte an den Versuchsleiter (oder schreiben Sie eine E-mail an Gaspar Lukacs).'
 
-    data_out.write(dems + "/" +
-      "/".join( [ str(nmbr) for nmbr in
-      [practice_repeated['block1'],
-      practice_repeated['block2'],
-      practice_repeated['block3'],
-      full_duration,
-      ] ] ) +
-      "\n")
+    data_out.write(dems + "/" + str(full_duration) + "\n")
     data_out.close()
     show_instruction( info )
 
@@ -211,7 +204,7 @@ def start_input():
                 print("vp (subject number) was not set correctly (should be simple number)")
                 stop = True
         subj_id = str(subj_num).zfill(2) + "_" + str(strftime("%Y%m%d%H%M%S", gmtime()))
-        dems = 'sbjID + condition' + str(subj_num) + str(condition)
+        dems = 'dems2\tcondition/duration\t' + str(condition)
         start_date = datetime.now()
 
 
@@ -403,7 +396,7 @@ def basic_variables():
 # create output file, begin writing, reset parameters
 def create_file():
     global data_out
-    f_name = 'exp_lcp_cit_maintask' + str(condition) + "_" + "_" + str(guilt) + "_ord" + "_" + subj_id + '.txt'
+    f_name = 'lcp2_cit_' + str(condition) + "_" + subj_id + '.txt'
     data_out=open(f_name, 'a', encoding='utf-8')
     data_out.write( '\t'.join( [ "subject_id", "condition", "phase", "block_number", "trial_number", "stimulus_shown",  "stim_type", "response_key", "rt_start", "incorrect", "too_slow", "press_duration", "isi", "date_in_ms", "guilt" ] ) + "\n" )
     print("File created:", f_name)

@@ -68,7 +68,7 @@ def execute():
     ending() # saves demographic & final infos, gives feedback
 
     waitKeys(keyList = ['b']) # press B to end the exp (prevents subject from closing window)
-    quit
+    quit()
 
 def consent_instructions():
     show_instruction("Bitte füllen Sie die Einverständniserklärung zur Teilnahme am Experiment aus. \nSie sollten diese vor sich auf dem Tisch finden. Bei Unklarheiten oder weiteren Fragen heben Sie leise Ihre Hand.\nWenn Sie damit fertig sind, drücken sie die Leertaste, um mit dem Experiment zu starten.")
@@ -239,7 +239,7 @@ def start_input():
             gender = 1
         else:
             gender = 3
-        dems = 'dems/gender/age//drtn/dcit' + '\t' + str(gender) + '/' + str(age)  + '/'
+        dems = 'dems\tgender/age\t' + str(gender) + '/' + str(age)
         start_date = datetime.now()
     else:
         quit()
@@ -248,24 +248,11 @@ def start_input():
 
 def create_file():
     global data_out
-    f_name = 'exp_lcp_cit_recall_task' + str(condition) + "_" + "_" + str(condition) + "_ord" + "_" + subj_id + '.txt'
+    f_name = 'lcp1_learning_' + str(condition) + "_" + subj_id + '.txt'
     data_out=open(f_name, 'a', encoding='utf-8')
     data_out.write( '\t'.join( [ "subject_id", "condition", "probe_item", "typed_in", "similarityscore", "rounds"  ] ) + "\n" )
     print("File created:", f_name)
 
-
-
-def start_with_space():
-    start_text.draw() # start with space
-    center_disp.setText("+")
-    center_disp.draw()
-    draw_labels()
-    win.flip()
-    inst_resp = waitKeys(keyList = ['space',escape_key])
-    end_on_esc(inst_resp[0])
-    draw_labels()
-    win.flip()
-    wait(isi_set[0]/1000)
 
 
 def show_instruction(instruction_text):
@@ -362,8 +349,7 @@ def add_resp():
 
 
 def ending ():
-    data_out.write(dems + "/" +
-      "\n")
+    data_out.write(dems + "\n")
     data_out.close()
     show_instruction( "ENDE" )
 
