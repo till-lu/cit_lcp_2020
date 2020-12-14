@@ -203,7 +203,7 @@ def start_input():
             else:
                 print("vp (subject number) was not set correctly (should be simple number)")
                 stop = True
-        subj_id = str(subj_num).zfill(2) + "_" + str(strftime("%Y%m%d%H%M%S", gmtime()))
+        subj_id = str(subj_num).zfill(3) + "_" + str(strftime("%Y%m%d%H%M%S", gmtime()))
         dems = 'dems2\tcondition/duration\t' + str(condition)
         start_date = datetime.now()
 

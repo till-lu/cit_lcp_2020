@@ -232,7 +232,7 @@ def start_input():
         if stop:
             print("\nTry again with correct inputs.\n")
             quit()
-        subj_id = str(subj_num).zfill(2) + "_" + str(strftime("%Y%m%d%H%M%S", gmtime()))
+        subj_id = str(subj_num).zfill(3) + "_" + str(strftime("%Y%m%d%H%M%S", gmtime()))
         if input_box.data[2] == 'weiblich':
             gender = 2
         elif input_box.data[2] == 'männlich':
