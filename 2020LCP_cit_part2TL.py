@@ -409,13 +409,13 @@ def str_if_num( num_val ):
 
 def add_resp():
     global incorrect, tooslow
-    data_out.write( '\t'.join( [ subj_id, str(condition), crrnt_phase, str(block_num), str(trial_num+1), stim_text, stim_current["item_type"], stim_type, resp_key, str_if_num(rt_start), str(incorrect), str(tooslow), str_if_num(press_dur), str_if_num( isi_set[0]/1000 + isi_delay ), str(strftime("%Y%m%d%H%M%S", gmtime())), str(guilt) ] ) + '\n' )
+    data_out.write( '\t'.join( [ subj_id, str(condition), crrnt_phase, str(block_num), str(trial_num+1), stim_text, stim_type, resp_key, str_if_num(rt_start), str(incorrect), str(tooslow), str_if_num(press_dur), str_if_num( isi_set[0]/1000 + isi_delay ), str(strftime("%Y%m%d%H%M%S", gmtime())), str(guilt) ] ) + '\n' )
     print("resp key:", resp_key, "for stim:", stim_text, "incorrect:", incorrect, "rt_start:", rt_start)
 
 
 def add_recall_resp():
     global condition, required
-    data_out.write( '\t'.join( [ str(subj_id), str(condition), str(required), str(typedin), str(similar_text(str(required.upper()), str(typedin.upper())))]) + '_round' + str(rounds) + '\n' )
+    data_out.write( '\t'.join( [ str(subj_id), str(condition), str(required), str(typedin), str(similar_text(str(required.upper()), str(typedin.upper())))]) + '\tround' + str(rounds) + '\n' )
     print(required.upper(), str(typedin.upper()), similar_text(str(required.upper()), str(typedin)))
 
 def start_with_space():

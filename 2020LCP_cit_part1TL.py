@@ -342,7 +342,7 @@ def trm(raw_inp):
 
 def add_resp():
     global condition, required
-    data_out.write( '\t'.join( [ str(subj_id), str(condition), str(required), str(typedin), str(similar_text(str(required.upper()), str(typedin)))]) + '   ' +  str(rounds) + '\n' )
+    data_out.write( '\t'.join( [ str(subj_id), str(condition), str(required), str(typedin), str(similar_text(str(required.upper()), str(typedin)))]) + '\t' +  str(rounds) + '\n' )
     print(required, str(typedin), similar_text(str(required.upper()), str(typedin)))
 
 
