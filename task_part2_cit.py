@@ -91,23 +91,16 @@ def distraction_task():
 
 
 def cm_warning():
-    global win, start_text, left_label, right_label, center_disp, instruction_page, instruction_color
+    global start_text, left_label, right_label, center_disp, instruction_page, instruction_color
     show_instruction("Jetzt geht es um Ihre Merkfähigkeit. Sie werden erneut Wortpaare auswendig lernen und diese in drei Runden wiedergeben. Darauf folgt ein Test, in dem Ihnen Wortpaare gezeigt werden. In diesem Test sollen Sie auf die nun gleich gezeigten und anschließend von Ihnen gelernten Wortpaare mit einer anderen Taste reagieren als auf alle anderen gezeigten Wortpaare. \n\nUm weiterzugehen, drücken Sie die Leertaste.")
     if condition in [1, 2, 3, 4]:
         cit_warning_text()
     instruction_color = '#9999FF'
-    win = Window([1280, 1000], color='Black', fullscr = 1, units = 'pix', allowGUI = True) # 1280 1024
     start_text = TextStim(win, color=instruction_color, font='Verdana', text = u'Um anzufangen, bitte die Leertaste drücken.', pos = [0,-300], height=35, bold = True, wrapWidth= 1100)
     left_label = TextStim(win, color='white', font='Verdana', text = 'nein', pos = [-350,-160], height=35, alignHoriz='center')
     right_label = TextStim(win, color='white', font='Verdana', text = 'ja', pos = [350,-160], height=35, alignHoriz='center')
     center_disp = TextStim(win, color='white', font='Arial', text = '', height = 60)
     instruction_page = TextStim(win, wrapWidth = 1200, height = 28, font='Verdana', color = instruction_color)
-
-
-
-def crime_text():
-    show_instruction(probe_crime_text)
-
 
 def cit_warning_text():
     show_instruction(text_warning_cit)
