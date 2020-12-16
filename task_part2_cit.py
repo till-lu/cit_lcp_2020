@@ -24,7 +24,7 @@ instruction_color = '#111111'
 ###
 
 
-distraction_text = "Bearbeiten Sie nun bitte die Ihnen auf einem Blatt gereichten Aufgaben. Sie haben dafür 10 Minuten Zeit. Drücken Sie anschließend die Leertaste um fortzufahren."
+distraction_text = "Bearbeiten Sie nun bitte die Ihnen auf einem Blatt gereichten Aufgaben. Sie haben dafür 10 Minuten Zeit. Wenn die 10 Minuten vergangen sind, sehen Sie hier auf dem Bildschirm die neuen Anweisungen."
 
 target_guilty_list = ' Ausgeben als : Frank Moser\n\n Nachricht an Deckname : Grüner Hut\n\n Aktion : Operation Schwein\n\n Objekt : Schnee Akte\n\n Inhalt des Objektes : Schiff Pläne\n\n Adresse : Barsch Straße'
 
@@ -83,9 +83,10 @@ def execute():
     quit()
 
 def distraction_task():
-    show_instruction(distraction_text)
-
-
+    instruction_page.setText(distraction_text)
+    instruction_page.draw()
+    win.flip()
+    wait(10*60)
 
 def cm_warning():
     global start_text, left_label, right_label, center_disp, instruction_page, instruction_color
