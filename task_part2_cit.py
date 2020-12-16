@@ -422,8 +422,8 @@ def next_block():
         target_check_one()
         target_check_one()
         show_instruction('Nun folgt der Test zu der Liste mit Wortkombinationen, die Sie gerade gelernt haben. Sie werden verschiedene Wortkombinationen sehen, die nacheinander auf dem Monitor gezeigt werden. Bei jeder dieser Kombinationen sollen Sie so schnell wie möglich angeben, ob diese in der gelernten Liste enthalten war oder nicht. War die Wortkombination in der zuvor gelernten Liste enthalten, drücken Sie „J“ (JA). Wird eine andere Wortkombination gezeigt, so drücken Sie „F“ (NEIN). Verwenden Sie dazu Ihre beiden Zeigefinger und positionieren sie direkt über den Tasten, damit Sie so schnell und akkurat wie möglich reagieren können. Leertaste drücken, um fortzufahren.')
-        test_key_j("Probieren Sie dies nun aus, in dem sie jetzt 'J' drücken...")
-        test_key_f("...und drücken Sie nun bitte 'F'.\nIm Anschluss gelangen Sie zum Test.")
+        test_key_yes("Probieren Sie dies nun aus, in dem sie jetzt 'J' drücken...")
+        test_key_no("...und drücken Sie nun bitte 'F'.\nIm Anschluss gelangen Sie zum Test.")
         crrnt_phase = 'main'
         rt_data_dict = {}
         assign_keys()
@@ -466,7 +466,7 @@ def show_instruction(instruction_text):
     end_on_esc(inst_resp[0])
 
 
-def test_key_j(test_text):
+def test_key_yes(test_text):
     instruction_page.setText(test_text)
     instruction_page.draw()
     win.flip()
@@ -475,7 +475,7 @@ def test_key_j(test_text):
     end_on_esc(inst_resp[0])
 
 
-def test_key_f(test_text):
+def test_key_no(test_text):
     instruction_page.setText(test_text)
     instruction_page.draw()
     win.flip()
