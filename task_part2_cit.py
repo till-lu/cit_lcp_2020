@@ -577,7 +577,6 @@ def collect_rts(): # for practice evaluation & dcit calculation
 
 def show_tooslow():
     center_disp.text = 'Zu langsam!'
-    center_disp.color = '#ff1111'
     center_disp.draw()
     draw_labels()
     win.flip()
