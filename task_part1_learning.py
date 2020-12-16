@@ -71,7 +71,7 @@ def execute():
     quit()
 
 def consent_instructions():
-    show_instruction("Bitte füllen Sie die Einverständniserklärung zur Teilnahme am Experiment aus. \nSie sollten diese vor sich auf dem Tisch finden. Bei Unklarheiten oder weiteren Fragen heben Sie leise Ihre Hand.\nWenn Sie damit fertig sind, drücken sie die Leertaste, um mit dem Experiment zu starten.")
+    show_instruction("Bitte füllen Sie die Einverständniserklärung zur Teilnahme am Experiment aus. \nSie sollten diese vor sich auf dem Tisch finden. Bei Unklarheiten oder weiteren Fragen heben Sie leise Ihre Hand.\nWenn Sie damit fertig sind, drücken Sie die Leertaste, um mit dem Experiment zu starten.")
     show_instruction("Sie werden nun eine Reihe von Aufgaben am Computer durchführen. Bitte lesen und befolgen Sie die Anweisungen sorgfältig. Sollten Sie während des Experiments Fragen haben, melden Sie sich bei der Versuchsleitung, bevor Sie fortfahren.\nDrücken Sie die Leertaste, um die Anweisungen zu sehen.")
 
 
