@@ -204,7 +204,7 @@ def start_input():
         # 7       probes 1 + control + no crime first
         # 8       probes 2 + control + crime first first
         # check if variables correctly given
-        if condition not in range(1,8):
+        if condition not in range(1,9):
             if testing:
                 condition = 1 # set value for testing to skip Dlg input box
                 print("condition was not set, now set to " + str(condition) + " for testing.")
